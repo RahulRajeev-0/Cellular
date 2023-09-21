@@ -24,41 +24,71 @@
                     <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
       
                       <p class="text-center h1 fw-bold text-dark font-weight-bolder mb-5 mx-1 mx-md-4 mt-4"><img src="{% static "/img/logo.jpg" %}" width="50" height="50"> Cellular </p>
-                     
-                      <form class="mx-1 mx-md-4">
+
+                      <!-- ================================ message for error of invalid inputs ============================================-->
+
+                      {% for message in messages  %}
+                      <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                        <strong>{{ message }}</strong> 
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% endfor %}
+
+
+
+
+
+<!--=========================================================  sign up form ============================================================================================================================================================================ -->
+                    
+
+
+                   
+                      <form class="mx-1 mx-md-4" method="POST" action="{% url "user_signUp" %}">
+                        {% csrf_token %}
+                        
                         <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign Up to create an account</h5>
+                        
                         <div class="d-flex flex-row align-items-center mb-4">
                           <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        
                           <div class="form-outline flex-fill mb-0">
-                            <input type="text" id="form3Example1c" class="form-control" />
+                            <input type="text" id="form3Example1c" class="form-control" name="name"/ Required>
                             <label class="form-label text-dark font-weight-light" for="form3Example1c">User Name</label>
+                        
                           </div>
                         </div>
-      
+
                         <div class="d-flex flex-row align-items-center mb-4">
                           <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                        
                           <div class="form-outline flex-fill mb-0">
-                            <input type="email" id="form3Example3c" class="form-control" />
+                            <input type="email" id="form3Example3c" class="form-control" name="email" Required>
                             <label class="form-label font-weight-light" for="form3Example3c">Your Email</label>
+                        
                           </div>
                         </div>
+
+                        
                         <div class="form-outline flex-fill mb-0">
-                          <input type="text" id="form3Example1c" class="form-control" />
+                          <input type="text" Required name="phone_no" id="form3Example1c" class="form-control" />
                           <label class="form-label text-dark font-weight-light" for="form3Example1c">Phone Number</label>
                         </div>
       
                         <div class="d-flex flex-row align-items-center mb-4">
                           <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                           <div class="form-outline flex-fill mb-0">
-                            <input type="password" id="form3Example4c" class="form-control" />
+                            <input type="password" id="form3Example4c" name="passw1" Required class="form-control" />
                             <label class="form-label font-weight-light" for="form3Example4c">Password</label>
                           </div>
                         </div>
       
+                        
                         <div class="d-flex flex-row align-items-center mb-4">
                           <i class="fas fa-key fa-lg me-3 fa-fw"></i>
                           <div class="form-outline flex-fill mb-0">
-                            <input type="password" id="form3Example4cd" class="form-control" />
+                            <input type="password" id="form3Example4cd" name="passw2" Required class="form-control" />
                             <label class="form-label font-weight-light" for="form3Example4cd">Repeat your password</label>
                           </div>
                         </div>
@@ -72,7 +102,7 @@
                         </div>
       
                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                          <button type="button" class="btn text-white btn-warning btn-lg">Register</button>
+                          <button type="submit" class="btn text-white btn-warning btn-lg">Register</button>
                         </div>
                         
       
