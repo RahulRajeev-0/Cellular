@@ -95,30 +95,35 @@
     <!-- Navbar Start -->
     <div class="container-fluid mb-5  ">
         <div class="row border-top px-xl-5">
-            <div class="col-lg d-none d-lg-block ">
+            <div class="col-lg-3 d-none d-lg-block ">
                 
             </div>
-            <div class="col-lg-12">
+            <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold  px-3 mr-1"><img src="{% static "/img/logo.jpg" %}" width="50" height="50"></span>Cellular</h1>
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary   px-3 mr-1"><img src="{% static "/img/logo.jpg" %}" width="50" height="50"></span>Cellular</h1>
                     </a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active text-dark font-weight-bolder">Home</a>
-                            <a href="shop.html" class="nav-item nav-link text-dark font-weight-medium">Shop</a>
-                            <a href="detail.html" class="nav-item nav-link text-dark font-weight-medium">Shop Detail</a>
+                            <a href={% url "account_management:index" %} class="nav-item nav-link active text-dark ">Home</a>
+                            <a href={% url "product:shoping_page"%} class="nav-item nav-link text-dark ">Shop</a>
+                            {% comment %} <a href="detail.html" class="nav-item nav-link text-dark font-weight-medium">Shop Detail</a> {% endcomment %}
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle text-warning font-weight-medium" data-toggle="dropdown">Login</a>
+                                <a href="#" class="nav-link dropdown-toggle text-warning font-weight-medium" data-toggle="dropdown">{% if user.is_authenticated %}Account{% else %}Login {% endif %}</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="/user_login/" class="dropdown-item text-dark">Login</a>
-                                    <a href="/user_signUp/" class="dropdown-item text-dark ">Sign Up</a>
+                                   
+                                    {% if user.is_authenticated %}
+                                    <a href={% url "account_management:logout_user" %} class="dropdown-item text-dark ">Log out</a>
+                                    {% else %}
+                                    <a href={% url "account_management:user_login" %} class="dropdown-item text-dark">Login</a>
+                                    <a href={% url "account_management:user_signUp" %} class="dropdown-item text-dark ">Sign Up</a>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <a href="contact.html" class="nav-item nav-link text-dark font-weight-medium">Contact</a>
+                            {% comment %} <a href="contact.html" class="nav-item nav-link text-dark font-weight-medium">Contact</a> {% endcomment %}
                         </div>
                     </div>
                 </nav>

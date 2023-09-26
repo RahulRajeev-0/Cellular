@@ -45,7 +45,7 @@
 
 
                    
-                      <form class="mx-1 mx-md-4" method="POST" action="{% url "user_signUp" %}">
+                      <form class="mx-1 mx-md-4" method="POST" action="{% url "account_management:user_signUp" %}">
                         {% csrf_token %}
                         
                         <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign Up to create an account</h5>
@@ -96,7 +96,7 @@
                         <div class="form-check d-flex justify-content-center mb-5">
                           
                           <label class="form-check-label font-weight-light" for="form2Example3">
-                            Already have an Account <a href="#!">Login</a>
+                            Already have an Account <a href="{% url "account_management:user_login" %}">Login</a>
                           </label>
                           
                         </div>

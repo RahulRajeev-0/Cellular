@@ -30,7 +30,7 @@
 
 <!--======================================================Login form ====================================================-->
 
-                      <form method='POST' action="{% url "user_login" %}">
+                      <form method='POST' action="{% url "account_management:user_login" %}">
                         {% csrf_token %}
       
                         <!-- ================================ message for error of invalid inputs ============================================-->
@@ -67,8 +67,8 @@
                           <button class="btn btn-warning btn-lg btn-block" type="submit">Login</button>
                         </div>
       
-                        <a class="small text-muted" href="#!">Forgot password?</a>
-                        <p class="mb-5 pb-lg-2" style="color: #393f81;">Don't have an account? <a href="#!"
+                        <a class="small text-muted" href="{% url 'account_management:forgot_pass_email'%}">Forgot password?</a>
+                        <p class="mb-5 pb-lg-2" style="color: #393f81;">Don't have an account? <a href="{% url "account_management:user_signUp" %}"
                             style="color: #393f81;">Register here</a></p>
                         <a href="#!" class="small text-muted">Terms of use.</a>
                         <a href="#!" class="small text-muted">Privacy policy</a>

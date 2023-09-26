@@ -19,10 +19,15 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(
                 'Superuser must be assigned is_superuser=True'
             )
+        if other_fields.get('is_active') is not True:
+            raise ValueError(
+                'Superuser must be assigned is_active=True'
+            )
         return self.create_user(user_name,email,phone_number,password,**other_fields)
     
     def create_user(self,user_name,email,phone_number,password,**other_fields):
         email=self.normalize_email(email)
+        other_fields.setdefault('is_active',True)
         user=self.model(user_name=user_name,email=email,phone_number=phone_number,**other_fields)
         user.set_password(password)
         user.save()
@@ -52,7 +57,7 @@ class Account(AbstractBaseUser,PermissionsMixin):
     is_admin            =models.BooleanField(default=False)
     is_staff            =models.BooleanField(default=False)
     is_superuser        =models.BooleanField(default=False)
-    is_active           =models.BooleanField(default=False)
+    is_active           =models.BooleanField(default=True)
 
     objects=CustomAccountManager()
     USERNAME_FIELD = 'email'
