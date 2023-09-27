@@ -6,6 +6,6 @@ app_name='product'
 
 urlpatterns = [
     path('shoping_page/',views.shoping_page,name='shoping_page'),
-    path('product_details/',views.product_details,name='product_details'),
+    path('product_details/<str:slug>',views.product_details,name='product_details'),
     
 ]
