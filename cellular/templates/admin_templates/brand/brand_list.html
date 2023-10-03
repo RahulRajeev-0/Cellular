@@ -1,0 +1,82 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Brands list</h2>
+        <div>
+            <a href="{% url "admin_panel:add_brand" %}" class="btn btn-success"><i class="material-icons md-plus"></i> add new brand</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control">
+                </div>
+                
+                
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Brand</th>
+                            <th class="text-end"> Active </th>
+                            <th class="text-end"> Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand in brands  %}
+                        <tr>
+                           
+                            <td width="40%">
+                                <a href="#" class="itemside">
+                                    <div class="info pl-3">
+                                        <h6 class="mb-0 title"> {{brand.brand_name}} </h6>
+                                    </div>
+                                </a>
+                            </td>
+                            
+                            <td class="text-end">
+                                <div>
+                                    <span class="badge  bg-{% if user.is_active %}success {% else %}danger{% endif %} alert-success"> {{user.is_active}} </span>
+                                </div>
+                               
+                            </td>
+                            <td class="text-end">
+                                <div>
+                                    <a href="" class="btn btn-danger">action</a>
+                                </div>
+                               
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table> <!-- table-responsive.// -->
+            </div>
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+   
+
+
+{% endblock content %}

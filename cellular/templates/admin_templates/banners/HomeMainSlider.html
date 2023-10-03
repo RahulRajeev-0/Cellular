@@ -1,0 +1,83 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<center>
+    <h1>Home page Main Slider  </h1>
+    <p> Form to add slider image , heading and subheading </p>
+    <br><br>
+    
+        <section class="content-main">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Banner</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action='' method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type='submit' value='Add Banner' class='btn btn-success'>
+                            </form>
+                            
+                        </div>
+                    </div> <!-- card end// -->
+                  
+                </div>
+                <div class="col-lg-6">
+                    <section class="content-main">
+                        <div class="card ">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th scope="col">Heading</th>
+                                                
+                                                <th scope="col" class="text-end"> Action </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {%for i in list %}
+                                            <tr>
+                                                
+                                                <td>{{forloop.counter}}</td>
+                                                <td><b>
+                                                    {{i.heading}}
+                                                </b></td>
+                                                <td class="text-end">
+                                                    <a href={% url "admin_panel:delete_slide" slide_id=i.id%} class="btn btn-md rounded font-sm">Delete</a>
+                                                     
+                                                </td>
+                                                
+                                            </tr>
+                                           {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div> <!-- table-responsive //end -->
+                            </div> <!-- card-body end// -->
+                        </div> <!-- card end// -->
+
+                    </section>
+                </div>
+
+              
+            </div>
+        </section>
+       
+
+       
+    
+
+ 
+
+</center>
+
+
+
+
+{% endblock content %}

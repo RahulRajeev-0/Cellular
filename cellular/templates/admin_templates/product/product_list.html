@@ -1,0 +1,111 @@
+
+{% extends "admin_templates/base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">User List </h2>
+            
+        </div>
+        {% comment %} <div>
+            <input type="text" placeholder="Search order ID" class="form-control bg-white">
+        </div> {% endcomment %}
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control">
+                </div>
+                
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-6 col-md-3">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th scope="col">Product name</th>
+                            <th scope="col">brand</th>
+                            <th scope="col">Price</th>
+                          
+                            {% comment %} <th scope="col">Date</th> {% endcomment %}
+                            {% comment %} <th scope="col" class="text-end"> Action </th> {% endcomment %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for product in products %}
+                        <tr>
+
+                            <td>{{forloop.counter}}</td>
+                            <td><b>{{product.product_name }}</b></td>
+                            <td> {{product.brand}} </td>
+                            <td> {{product.price}} </td>
+                            
+                            
+                           
+                            {% comment %} <td class="text-end">
+                                {% if user.is_active%}
+                                <a href="{% url "admin_panel:user_block_unblock" id=user.id %}" class="btn btn-md bg-danger font-sm">Block</a>
+                                {% else %}
+                                <a href="{% url "admin_panel:user_block_unblock" id=user.id %}" class="btn btn-md bg-success font-sm">UnBlock</a>
+                                {% endif %}
+
+                                <div class="dropdown">
+                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">View detail</a>
+                                        <a class="dropdown-item" href="#">Edit info</a>
+                                        <a class="dropdown-item text-danger" href="#">Delete</a>
+                                    </div>
+                                </div> <!-- dropdown //end -->
+                            </td> {% endcomment %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url "admin_panel:add_product" %}" class="btn btn-primary btn-sm rounded">Create new</a>
+            </div> <!-- table-responsive //end -->
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+
+
+{% endblock content %}
+
+
+
+

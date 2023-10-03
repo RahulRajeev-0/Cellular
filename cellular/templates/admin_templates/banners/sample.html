@@ -1,0 +1,47 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<center>
+    <h1>Home page Main Slider  </h1>
+    <p> Form to add slider image , heading and subheading </p>
+    <br><br>
+    
+        <section class="content-main">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Banner</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action='' method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type='submit' value='Add Banner' class='btn btn-success'>
+                            </form>
+                            
+                        </div>
+                    </div> <!-- card end// -->
+                  
+                </div>
+               
+
+              
+            </div>
+        </section>
+       
+
+       
+    
+
+ 
+
+</center>
+
+
+
+
+{% endblock content %}

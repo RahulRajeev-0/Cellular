@@ -7,6 +7,7 @@ class Brand(BaseModel):
     brand_name          =models.CharField(max_length=100)
     slug                =models.SlugField(unique=True,null=True,blank=True)
     brand_image         =models.ImageField(upload_to='logos',blank=True)
+    is_active           =models.BooleanField(default=True)
     
     def save(self, *args, **kwargs):
         self.slug=slugify(self.brand_name)
@@ -15,14 +16,36 @@ class Brand(BaseModel):
     def __str__(self):
         return self.brand_name 
 
-    
+
+class ColorVarient(BaseModel):
+    color_name=models.CharField(max_length=100)
+    price      =models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.color_name
+
+
+class RamVarient(BaseModel):
+    ram_no=models.CharField(max_length=100)
+    price     =models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.ram_no
+
+
+
+
+
 class Product(BaseModel):
     product_name        =models.CharField(max_length=100)
     slug                =models.SlugField(unique=True,null=True,blank=True)
     brand               =models.ForeignKey(Brand,on_delete=models.CASCADE,related_name='products')
     price               =models.IntegerField()
     product_description =models.TextField()
-    ription             =models.TextField()
+    color_varient       =models.ManyToManyField(ColorVarient,blank=True)
+    ram_varient         =models.ManyToManyField(RamVarient,blank=True)
+
+
 
 
     def save(self, *args, **kwargs):

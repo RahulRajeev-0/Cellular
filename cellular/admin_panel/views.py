@@ -3,14 +3,35 @@ from account_management.models import Account
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from account_management.models import Account
+from product.models import Brand,Product
+from product.forms import BrandForm,ProductForm
+from account_management.forms import HomeMainSliderForm
+from account_management.models import HomeMainSlide
+from django.views.decorators.cache import cache_control
 
 
 
 # Create your views here.
+
+
+
+
+
+# --------------------------------------- function for rendering admin home page  ------------------------------------
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def admin_index (request):
+    if 'email' not in request.session:
+        return redirect ('admin_panel:admin_login')
     return render(request,'admin_templates/admin_index.html') 
 
+
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def admin_login(request):
+    if 'email' in request.session:
+        return redirect ('admin_panel:admin_index')
     if request.method=='POST':
             ademail=request.POST.get("email")
             passw=request.POST.get('password')
@@ -18,6 +39,7 @@ def admin_login(request):
             user=authenticate(email=ademail,password=passw)
            
             if user is not None and user.is_superuser:
+                request.session['email']=ademail
                 login(request,user)
                 return redirect('admin_panel:admin_index')
             else:
@@ -28,12 +50,25 @@ def admin_login(request):
 
 
 
-# function for user listing 
+
+
+
+# ------------------------------------------- function for user listing ------------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_listing(request):
+     if 'email' not in request.session:
+        return redirect ('admin_panel:admin_login')
      users=Account.objects.all()
      context={'users':users}
      return render(request,'admin_templates/user_list.html',context)
 
+
+
+
+# ----------------------   fucntion for user blocking and unblocking  ----------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_block_unblock(request,id):
         user=Account.objects.get(id=id)
         if user.is_active:
@@ -46,4 +81,143 @@ def user_block_unblock(request,id):
  
 
 
-     
+
+
+ # ----------------------------------- fucntion for rendering the list of brand  ----------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def brand_list(request):
+     if 'emial' not in request.session:
+        return redirect ('admin_panel:admin_login')
+     brands=Brand.objects.all()
+     context={'brands':brands}
+     return render(request,'admin_templates/brand/brand_list.html',context)
+
+
+
+
+# ----------------------------------- function for adding brand ----------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def add_brand(request):
+     if 'email' not in request.session:
+        return redirect ('admin_panel:admin_login')
+     if request.method=='POST':
+          form=BrandForm(request.POST)
+          if form.is_valid():
+               form.save()
+               return redirect('admin_panel:brand_list')
+     form= BrandForm
+     return render(request,'admin_templates/brand/brand_add.html',{'form':form})
+
+
+
+
+
+# ----------------------------------------- function for blocking and unblocking brand     -------------------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def block_unblock_brand(request,uid):
+     brand=Brand.objects.filter(id=uid)
+     print(brand)
+     return redirect('admin_panel:brand_list')
+
+
+
+
+
+
+# -------------------------------------- function for product list --------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def product_listing(request):
+     if request.user.is_authenticated is None:
+        return redirect ('admin_panel:admin_login')
+     products=Product.objects.all()
+     context={'products':products}
+     return render(request,'admin_templates/product/product_list.html',context)
+
+
+
+# -------------------------------------  function for adding product ----------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def add_product(request):
+     if request.user.is_authenticated is None:
+        return redirect ('admin_panel:admin_login')
+     if request.method=='POST':
+          form=ProductForm(request.POST)
+          if form.is_valid():
+               form.save()
+               return redirect('admin_panel:product_listing')
+          
+     form= ProductForm
+     return render(request,'admin_templates/product/add_product.html',{'form':form})
+
+
+
+
+
+# ------------------------------ fucntion for render the form page for adding Banners -------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def home_main_slider(request):
+     if request.user.is_authenticated is None:
+        return redirect ('admin_panel:admin_login')
+     if request.method=='POST':
+          form=HomeMainSliderForm(request.POST)
+          if form.is_valid():
+               form.save()
+               return redirect('admin_panel:home_main_slider')
+     else:
+
+          form= HomeMainSliderForm
+     list=HomeMainSlide.objects.all()
+     return render(request,'admin_templates/banners/HomeMainSlider.html',{'form':form,'list':list})
+
+
+
+
+
+
+# -------------------------------  function for deleting the banner  --------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def delete_slide(request, slide_id):
+    try:
+        slide_to_delete = HomeMainSlide.objects.get(pk=slide_id)
+        slide_to_delete.delete()
+    except HomeMainSlide.DoesNotExist:
+        # Handle the case where the slide with the given ID does not exist.
+        pass
+
+    return redirect('admin_panel:home_main_slider')
+
+
+
+
+
+
+def sample_check(request):
+     if request.method=='POST':
+          form=HomeMainSliderForm(request.POST)
+          if form.is_valid():
+               print("hlelo")
+               form.save()
+               return redirect('admin_panel:home_main_slider')
+     else:
+
+          form= HomeMainSliderForm
+     return render(request,'admin_templates/banners/HomeMainSlider.html',{'form':form})
+
+
+
+
+
+# --------------- fucntion for ad logout ---------------------------
+
+def ad_log_out(request):
+     logout(request)
+     return redirect ('admin_panel:admin_login')
+
+

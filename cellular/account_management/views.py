@@ -14,35 +14,57 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+from account_management.models import HomeMainSlide
+
+
+
+
+
+
 
 # Create your views here.
 
 
 
-#      function for rendering home page
+# ----------------------------------- function for rendering home page    ------------------------------------
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def index(request):
+    main_slid=HomeMainSlide.objects.all()
+    context={'main_slid':main_slid}
     if request.user.is_authenticated is None:
         return redirect ('account_management:index')
-    return render(request,'account_management/index.html')
+    return render(request,'account_management/index.html',context)
 
 
 
-#      function for user login 
+#   ------------------------------------------   function for user login    ------------------------------------
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_login(request):
     if request.user.is_authenticated:
         return redirect ('account_management:index')
     if request.method=="POST":
         uemail=request.POST.get('email')
+        try:
+            account=Account.objects.get(email=uemail)
+        except:
+            pass
         upass=request.POST.get('password')
         user=authenticate(request,email=uemail,password=upass)
         if user is not None:
            
             messages.success(request,"Loged In successfully")
-            messages.info(request,"Now please enter the OTP ")
             request.session['email']=uemail
-            return redirect ('account_management:otp_generation')
+            login(request,user)
+            return redirect ('account_management:index')
+        elif account is not None:
+            if account.is_active==False:
+                messages.warning(request,'Your are blocked !')
+                return redirect('account_management:user_login')
+            else:
+                pass
+            
         else:
             messages.warning(request,'Invalide Credential')
             return redirect('account_management:user_login')
@@ -52,7 +74,9 @@ def user_login(request):
 
 
 
-#      function for user sign_up
+#   ------------------------------------   function for user sign_up  ------------------------------------------------
+
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_signUp(request):
     if request.user.is_authenticated:
@@ -123,20 +147,27 @@ def user_signUp(request):
                 pass
 
             user=Account.objects.create_user(uname,email,phone,pass1)
-            messages.success(request,"Registed successfully")
-            return redirect('account_management:user_login')
+            messages.success(request,"OTP Sent to you email !")
+            request.session['email']=email
+            return redirect('account_management:otp_generation')
 
     return render(request,'account_management/user_signUp.html')
 
 
-#function for logout 
+
+
+
+
+
+#    ---------------------------------------  function for logout  ----------------------------------------------
+ 
 def logout_user(request):
     logout(request)
     return redirect('account_management:index')
 
 
 
-#function for gerating otp 
+#   ---------------------------------------------------  function for gerating otp  --------------------------------------
 
 def otp_generation(request):
     otp_number=random.randint(1000,9999)
@@ -152,7 +183,8 @@ def otp_generation(request):
 
 
 
-# function for opt rendering page
+# --------------------------------------------  function for opt rendering page  -----------------------------------
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def otp_verification(request):
      if request.user.is_authenticated:
@@ -161,7 +193,6 @@ def otp_verification(request):
      if request.method=="POST":
          inputed_otp=request.POST.get('otp')
          if str(inputed_otp)==str(request.session['otp_key']):
-             messages.success(request,"OTP VERIFICATION SUCCESSFUL")
              login(request,user)
              return redirect('account_management:index')
          else:
@@ -171,7 +202,13 @@ def otp_verification(request):
      return render(request,'account_management/otp_page.html')
 
 
-# function for rendering the forgot password email input and checking fields.
+
+
+
+
+
+# --------------------------------- function for rendering the forgot password email input and checking fields.  -------------------------------------
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def forgot_pass_email(request):
     if request.user.is_authenticated:
@@ -200,7 +237,7 @@ def forgot_pass_email(request):
 
 
 
-
+            request.session['email']=forEmail
             return redirect('account_management:user_login')
         else:
             messages.warning(request,"Account not found ! ")
@@ -208,6 +245,11 @@ def forgot_pass_email(request):
 
     return render(request,'account_management/forgot_pass_email_page.html')
 
+
+
+
+
+# --------------------------------  function for reset password decoding  ---------------------------------------------
 
 def resetpassword_valid(request,uidb64,token):
     try:
@@ -224,7 +266,16 @@ def resetpassword_valid(request,uidb64,token):
         messages.warning(request,'This link is expired ! ')
         return redirect('account_management:user_login')
 
+
+
+
+
+# ---------------------------------  function for reset password  creating new password page and validation for password --------------------------------------
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def reset_password(request):
+    if request.user.is_authenticated:
+        return redirect ('account_management:index')
     if request.method=='POST':
         pass1=request.POST.get('password_new')
         pass2=request.POST.get('password_conf')
@@ -234,7 +285,8 @@ def reset_password(request):
             user.set_password(pass1)
             user.save()
             messages.success(request,"Password reset successful")
-            return redirect('account_management:user_login')
+            login(request,user)
+            return redirect('account_management:index')
         else:
             messages.warning(request,"Password do not match !")
             return redirect('account_management:reset_password')

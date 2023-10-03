@@ -4,16 +4,25 @@
 
 {% load static %}
 
+
+
+<!-- ======================   produtct details pages    -->
+
 <div class="container-fluid py-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 pb-5">
             <div id="product-carousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner border">
+
+    <!-- ===============  for loop for getting available photos in database about the product ==================== -->                    
+
+
                     {% for image in product.product_images.all %}
                     <div class="carousel-item active">
                         <img class="w-100 h-100" src="/media/{{image.image}}" alt="Image">
                     </div>
                     {% endfor %}
+
                 </div>
                 <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
                     <i class="fa fa-2x fa-angle-left text-dark"></i>
@@ -25,6 +34,10 @@
         </div>
 
         <div class="col-lg-7 pb-5">
+
+        <!-- =================product name ================== -->
+
+
             <h3 class="font-weight-semi-bold">{{product.product_name}}</h3>
             <div class="d-flex mb-3">
                 <div class="text-primary mr-2">
@@ -36,58 +49,55 @@
                 </div>
                 <small class="pt-1">(50 Reviews)</small>
             </div>
-            <h3 class="font-weight-semi-bold mb-4">$150.00</h3>
+
+            <!--================ proudct price and discription is mensioned here==============-->
+
+
+            <h3 class="font-weight-semi-bold mb-4">{{product.price}}</h3>
             <p class="mb-4"> {{product.product_description}} </p>
+
+
+<!--=============== if variation for product is available then show them else don't ==================== -->
+
+        {% if product.ram_varient.count %}
             <div class="d-flex mb-3">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
+                <p class="text-dark font-weight-medium mb-0 mr-3">Ram:</p>
                 <form>
+
+ <!--======== for getting the ram variation using loop ======-->
+
+                    {% for ram  in product.ram_varient.all %}
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" class="custom-control-input" id="size-1" name="size">
-                        <label class="custom-control-label" for="size-1">XS</label>
+                        <label class="custom-control-label" for="size-1"> {{ram.ram_no}} </label>
                     </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-2" name="size">
-                        <label class="custom-control-label" for="size-2">S</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-3" name="size">
-                        <label class="custom-control-label" for="size-3">M</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-4" name="size">
-                        <label class="custom-control-label" for="size-4">L</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-5" name="size">
-                        <label class="custom-control-label" for="size-5">XL</label>
-                    </div>
+                    {% endfor %}
                 </form>
             </div>
+            {% endif %}
+
+<!--=============== if variation for product is available then show them else don't ==================== -->
+
+            {% if product.color_varient.count %}
             <div class="d-flex mb-4">
                 <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
                 <form>
+
+            
+                    <!--======== for getting the color variation using loop ======-->
+
+                    {% for color in product.color_varient.all %}
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" class="custom-control-input" id="color-1" name="color">
-                        <label class="custom-control-label" for="color-1">Black</label>
+                        <label class="custom-control-label" for="color-1"> {{color.color_name}} </label>
                     </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-2" name="color">
-                        <label class="custom-control-label" for="color-2">White</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-3" name="color">
-                        <label class="custom-control-label" for="color-3">Red</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-4" name="color">
-                        <label class="custom-control-label" for="color-4">Blue</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-5" name="color">
-                        <label class="custom-control-label" for="color-5">Green</label>
-                    </div>
+                    {% endfor %}
                 </form>
             </div>
+
+            {% endif %}
+
+
             <div class="d-flex align-items-center mb-4 pt-2">
                 <div class="input-group quantity mr-3" style="width: 130px;">
                     <div class="input-group-btn">

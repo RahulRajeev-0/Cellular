@@ -1,6 +1,18 @@
+
+# ------standard libary imports------ 
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser , BaseUserManager ,PermissionsMixin
 from django.utils import timezone
+
+# -------Related Third-Party Imports ------
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractBaseUser , BaseUserManager ,PermissionsMixin
+from PIL import Image     #for maintaining aspect ratio 
+
+
+
+
+
+
 
 
 #custom manager for Account model
@@ -66,3 +78,31 @@ class Account(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         return self.email
 
+
+#model for home page main slide display contents 
+class HomeMainSlide(models.Model):
+    heading         =models.CharField(max_length=20,null=False)
+    subheading      =models.CharField(max_length=30,null=True)
+    slide_image     =models.ImageField(upload_to='banners')
+
+    def __str__(self):
+        return self.heading
+    
+    # fucntion for validating the inputs of model mainly aspect ration of image
+    def clean(self):
+        max_width  = 1920
+        max_height = 1080
+        aspect_ratio = max_width/max_height
+        total_slides = HomeMainSlide.objects.count()
+
+
+        if self.slide_image:
+            image=Image.open(self.slide_image)
+            img_width,img_height=image.size
+            img_aspect_ratio = img_width/img_height
+
+            if abs(img_aspect_ratio-aspect_ratio)>2.01:
+                raise ValidationError(f'The image aspect ratio must be {aspect_ratio}:1')
+            
+        if total_slides >= 3:
+            raise ValidationError("You can only have a maximum of 3 slides in HomeMainSlide.")
