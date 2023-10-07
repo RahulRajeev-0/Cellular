@@ -101,8 +101,43 @@ class HomeMainSlide(models.Model):
             img_width,img_height=image.size
             img_aspect_ratio = img_width/img_height
 
-            if abs(img_aspect_ratio-aspect_ratio)>2.01:
+            if abs(img_aspect_ratio-aspect_ratio) > 1.2 and abs(img_aspect_ratio-aspect_ratio)< 1.8:
                 raise ValidationError(f'The image aspect ratio must be {aspect_ratio}:1')
             
         if total_slides >= 3:
             raise ValidationError("You can only have a maximum of 3 slides in HomeMainSlide.")
+
+
+
+
+class HomeSubBanner (models.Model):
+    heading = models.CharField(max_length=30,blank=False,null=False)
+    sub_heading = models.CharField(max_length=50)
+    img = models.ImageField(upload_to='banners')
+
+    def __str__(self):
+        return self.heading
+    
+    def clean(self):
+        max_width  = 1920
+        max_height = 1080
+        aspect_ratio = max_width/max_height
+        total_slides = HomeSubBanner.objects.count()
+
+
+        if self.img:
+            image=Image.open(self.img)
+            img_width,img_height=image.size
+            img_aspect_ratio = img_width/img_height
+
+            if abs(img_aspect_ratio-aspect_ratio) > 1.9 :
+                raise ValidationError(f'The image aspect ratio must be {aspect_ratio}:1')
+            
+        if total_slides >= 2:
+            raise ValidationError("You can only have a maximum of 2 slides in HomeMainSlide.")
+
+
+
+
+
+

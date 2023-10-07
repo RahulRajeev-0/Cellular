@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account,HomeMainSlide
+from .models import Account,HomeMainSlide,HomeSubBanner
 from django.contrib.auth.admin import UserAdmin
 
 class AccountAdmin(UserAdmin):
@@ -15,4 +15,5 @@ class AccountAdmin(UserAdmin):
 
 admin.site.register(Account,AccountAdmin)
 admin.site.register(HomeMainSlide)
+admin.site.register(HomeSubBanner)
 

@@ -44,10 +44,12 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>#ID</th>
+                            <th>No</th>
                             <th scope="col">Product name</th>
-                            <th scope="col">brand</th>
-                            <th scope="col">Price</th>
+                            <th scope='col'>Brand</th>
+                            <th scope='col'>Edit </th>
+                            <th scope="col" class="text-end">Delete</th>
+                            
                           
                             {% comment %} <th scope="col">Date</th> {% endcomment %}
                             {% comment %} <th scope="col" class="text-end"> Action </th> {% endcomment %}
@@ -60,7 +62,9 @@
                             <td>{{forloop.counter}}</td>
                             <td><b>{{product.product_name }}</b></td>
                             <td> {{product.brand}} </td>
-                            <td> {{product.price}} </td>
+                            <td> <a href="{% url "admin_panel:add_product" %}" class="btn btn-warning ">Edit</a></td>
+                            <td class='text-end'> <a href="{% url "admin_panel:add_product" %}" class="btn btn-danger ">Delete</a></td>
+
                             
                             
                            
@@ -84,7 +88,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <a href="{% url "admin_panel:add_product" %}" class="btn btn-primary btn-sm rounded">Create new</a>
+                <a href="{% url "admin_panel:add_product" %}" class="btn btn-info ">Create new ➕</a>
             </div> <!-- table-responsive //end -->
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->

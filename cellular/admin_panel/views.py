@@ -2,12 +2,23 @@ from django.shortcuts import render,HttpResponse,redirect
 from account_management.models import Account
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-from account_management.models import Account
-from product.models import Brand,Product
-from product.forms import BrandForm,ProductForm
-from account_management.forms import HomeMainSliderForm
-from account_management.models import HomeMainSlide
 from django.views.decorators.cache import cache_control
+from django.shortcuts import get_object_or_404
+
+
+# ------------ from app imports ----------------
+
+# >>>>>>>>>>>>>>>>>>> models <<<<<<<<<<<<<<<<<<<<
+from account_management.models import Account
+from account_management.models import HomeMainSlide,HomeSubBanner
+from product.models import Brand,Product,RamVarient,ColorVarient
+
+# >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
+from product.forms import BrandForm,ProductForm,RamForm,ColorForm
+from account_management.forms import HomeMainSliderForm, HomeSubBannerForm
+
+
+
 
 
 
@@ -87,8 +98,10 @@ def user_block_unblock(request,id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def brand_list(request):
-     if 'emial' not in request.session:
+     if 'email' not in request.session:
         return redirect ('admin_panel:admin_login')
+     # if 'emial' not in request.session:
+     #    return redirect ('admin_panel:admin_login')
      brands=Brand.objects.all()
      context={'brands':brands}
      return render(request,'admin_templates/brand/brand_list.html',context)
@@ -117,11 +130,38 @@ def add_brand(request):
 # ----------------------------------------- function for blocking and unblocking brand     -------------------------------------------
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def block_unblock_brand(request,uid):
-     brand=Brand.objects.filter(id=uid)
-     print(brand)
+def block_unblock_brand(request,id):
+     brand=Brand.objects.get(id=id)
+     if brand.is_active:
+          brand.is_active=False
+          brand.save()
+     else:
+          brand.is_active=True
+          brand.save()
+
      return redirect('admin_panel:brand_list')
 
+
+
+
+
+# ------------------------   function for editing brand -----------------------------------------------
+
+def brand_edit(request,id):
+     if 'email' not  in request.session:
+        return redirect ('admin_panel:admin_login')
+     brand = get_object_or_404(Brand, id=id)
+    
+     if request.method == 'POST':
+        form = BrandForm(request.POST, instance=brand)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:brand_list')
+     else:
+        form = BrandForm(instance=brand)
+
+     return render(request, 'admin_templates/brand/brand_edit.html', {'form': form, 'brand': brand})
+     
 
 
 
@@ -131,7 +171,7 @@ def block_unblock_brand(request,uid):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def product_listing(request):
-     if request.user.is_authenticated is None:
+     if 'email' not in request.session:
         return redirect ('admin_panel:admin_login')
      products=Product.objects.all()
      context={'products':products}
@@ -143,7 +183,7 @@ def product_listing(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def add_product(request):
-     if request.user.is_authenticated is None:
+     if 'email' not in request.session:
         return redirect ('admin_panel:admin_login')
      if request.method=='POST':
           form=ProductForm(request.POST)
@@ -162,10 +202,10 @@ def add_product(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home_main_slider(request):
-     if request.user.is_authenticated is None:
-        return redirect ('admin_panel:admin_login')
+     if 'email' not in request.session:
+         return redirect ('admin_panel:admin_login')
      if request.method=='POST':
-          form=HomeMainSliderForm(request.POST)
+          form=HomeMainSliderForm(request.POST, request.FILES)
           if form.is_valid():
                form.save()
                return redirect('admin_panel:home_main_slider')
@@ -194,30 +234,74 @@ def delete_slide(request, slide_id):
     return redirect('admin_panel:home_main_slider')
 
 
+def Home_sub_banner(request):
+    if 'email' not in request.session:
+        return redirect('admin_panel:admin_login')
+    if request.method == 'POST':
+        form = HomeSubBannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:Home_sub_banner')
+    else:
+        form = HomeSubBannerForm
+    list = HomeSubBanner.objects.all()
+    return render(request, "admin_templates/banners/HomeSubBanner.html", {'form':form, 'list':list})
+    
 
 
 
 
-def sample_check(request):
-     if request.method=='POST':
-          form=HomeMainSliderForm(request.POST)
-          if form.is_valid():
-               print("hlelo")
-               form.save()
-               return redirect('admin_panel:home_main_slider')
-     else:
 
-          form= HomeMainSliderForm
-     return render(request,'admin_templates/banners/HomeMainSlider.html',{'form':form})
+# --------------------------------- function for deleting sub banners ---------------------------------------
 
+def delete_sub_banner(request, id):
+    try:
+        banner = HomeSubBanner.objects.get(id=id)
+        banner.delete()
+    except:
+        pass
+    return redirect('admin_panel:Home_sub_banner')
 
 
+
+
+
+
+
+# ----------------- fucntion to add ram ------------------- 
+
+def ram_list(request):
+    if request.method == 'POST':
+        form = RamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:ram_list')
+    else:
+        form = RamForm
+    list=RamVarient.objects.all()
+    return render(request, 'admin_templates/product/ram_variations.html', {'form':form, 'list':list})
+
+
+
+
+# -----------------function to add color -------------------
+
+def color_list(request):
+    if request.method == 'POST':
+        form = ColorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect ('admin_panel:color_list')
+    else:
+        form = ColorForm
+    list = ColorVarient.objects.all()
+    return render(request,'admin_templates/product/color_variations.html', {'form':form, 'list':list})
 
 
 # --------------- fucntion for ad logout ---------------------------
 
 def ad_log_out(request):
-     logout(request)
-     return redirect ('admin_panel:admin_login')
+    logout(request)
+    return redirect('admin_panel:admin_login')
 
 

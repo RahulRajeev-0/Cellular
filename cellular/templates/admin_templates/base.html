@@ -40,24 +40,32 @@
       </div>
       <nav>
           <ul class="menu-aside">
-              <li class="menu-item">
+            <li class="menu-item">
                   <a class="menu-link" href="{% url "admin_panel:admin_index" %}"> <i class="icon-warning material-icons md-home "></i>
                       <span class="text">Dashboard</span>
                   </a>
+                  
               </li>
-              <li class="menu-item">
+              
+                <li class="menu-item has-submenu">  
                   <a class="menu-link" href="{% url "admin_panel:product_listing" %}"> <i class="icon material-icons md-shopping_bag"></i>
                       <span class="text">Products</span>
                   </a>
-                  
+                  <div class="submenu">
+                    <a href={% url "admin_panel:product_listing" %}>Products</a>
+                    <a href={% url "admin_panel:color_list" %}>Product Varients</a>
+                    
+                    
+                </div>
               </li>
               <li class="menu-item has-submenu">
                 <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-add_box"></i>
-                    <span class="text">Add product varients</span>
+                    <span class="text">Varients option</span>
                 </a>
                 <div class="submenu">
-                    <a href="page-form-product-1.html">RAM</a>
-                    <a href="page-form-product-2.html">Color</a>
+                    <a href={% url "admin_panel:ram_list" %}>Add RAM</a>
+                    <a href={% url "admin_panel:color_list" %}>Add Color</a>
+                    
                 </div>
             </li>
             <li class="menu-item ">
@@ -71,7 +79,7 @@
                 </div> {% endcomment %}
             </li>
             <li class="menu-item">
-                <a class="menu-link" href="{% url "admin_panel:brand_list" %}"> <i class="icon material-icons md-stars"></i>
+                <a class="menu-link" href={% url "admin_panel:brand_list"  %}> <i class="icon material-icons md-stars"></i>
                     <span class="text">Brands</span> </a>
             </li>
             <li class="menu-item has-submenu">
@@ -80,7 +88,7 @@
                 </a>
                 <div class="submenu">
                     <a href={% url "admin_panel:home_main_slider" %}>Home Main Slide</a>
-                    <a href={% url "admin_panel:sample_check" %} >Sub banner</a>
+                    <a href={% url "admin_panel:Home_sub_banner" %} >2 Sub banner</a>
                 </div>
             </li>
               

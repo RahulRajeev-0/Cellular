@@ -4,8 +4,8 @@
 {% load static %}
 
 <center>
-    <h1>Home page Main Slider  </h1>
-    <p> Form to add slider image , heading and subheading </p>
+    <h1>Add color  </h1>
+    <p> Form to add different colors  </p>
     <br><br>
     
         <section class="content-main">
@@ -14,14 +14,14 @@
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h4>Banner</h4>
+                            <h4>Color</h4>
                         </div>
                         <div class="card-body">
-                            <form action="{% url 'admin_panel:home_main_slider' %}" method="POST" enctype="multipart/form-data">
+                            <form action="{% url 'admin_panel:color_list' %}" method="POST" enctype="multipart/form-data">
 
                                 {% csrf_token %}
                                 {{ form.as_p }}
-                                <input type='submit' value='Add Banner' class='btn btn-success'>
+                                <input type='submit' value='Add' class='btn btn-success'>
                             </form>
                             
                         </div>
@@ -37,9 +37,9 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th scope="col">Heading</th>
+                                                <td class="text-end">Color</th>
                                                 
-                                                <th scope="col" class="text-end"> Action </th>
+                                               
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -47,19 +47,16 @@
                                             <tr>
                                                 
                                                 <td>{{forloop.counter}}</td>
-                                                <td><b>
-                                                    {{i.heading}}
+                                                <td class="text-end"><b>
+                                                    {{i.color_name}}
                                                 </b></td>
-                                                <td class="text-end">
-                                                    <a href={% url "admin_panel:delete_slide" slide_id=i.id%} class="btn bg-warning btn-md rounded font-sm">Delete</a>
-                                                     
-                                                </td>
+                                                
                                                 
                                             </tr>
                                            {% endfor %}
                                         </tbody>
                                     </table>
-                                    <p>Only 3 slides can be inserted into the home slide</p>
+                                    
                                 </div> <!-- table-responsive //end -->
                             </div> <!-- card-body end// -->
                         </div> <!-- card end// -->

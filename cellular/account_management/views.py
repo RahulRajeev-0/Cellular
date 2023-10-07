@@ -14,7 +14,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
-from account_management.models import HomeMainSlide
+from account_management.models import HomeMainSlide,HomeSubBanner
 
 
 
@@ -30,8 +30,9 @@ from account_management.models import HomeMainSlide
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def index(request):
-    main_slid=HomeMainSlide.objects.all()
-    context={'main_slid':main_slid}
+    main_slid = HomeMainSlide.objects.all()
+    sub_banners = HomeSubBanner.objects.all()
+    context={'main_slid':main_slid, 'sub_banners':sub_banners}
     if request.user.is_authenticated is None:
         return redirect ('account_management:index')
     return render(request,'account_management/index.html',context)
@@ -251,7 +252,7 @@ def forgot_pass_email(request):
 
 # --------------------------------  function for reset password decoding  ---------------------------------------------
 
-def resetpassword_valid(request,uidb64,token):
+def resetpassword_valid(request, uidb64, token):
     try:
         uid=urlsafe_base64_decode(uidb64).decode()
         user=Account._default_manager.get(pk=uid)

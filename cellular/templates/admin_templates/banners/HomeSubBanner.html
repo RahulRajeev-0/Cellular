@@ -4,8 +4,8 @@
 {% load static %}
 
 <center>
-    <h1>Home page Main Slider  </h1>
-    <p> Form to add slider image , heading and subheading </p>
+    <h1>Home page Sub Banner  </h1>
+    <p> Form to add Sub banner image , heading and subheading </p>
     <br><br>
     
         <section class="content-main">
@@ -14,16 +14,18 @@
                 <div class="col-lg-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h4>Banner</h4>
+                            <h4>Sub Banner</h4>
                         </div>
                         <div class="card-body">
-                            <form action="{% url 'admin_panel:home_main_slider' %}" method="POST" enctype="multipart/form-data">
+                            <form action="{% url 'admin_panel:Home_sub_banner' %}" method="POST" enctype="multipart/form-data">
+                               
 
                                 {% csrf_token %}
                                 {{ form.as_p }}
                                 <input type='submit' value='Add Banner' class='btn btn-success'>
                             </form>
-                            
+                            <br>
+                            <p>Note:    Please remove the background of the image <br>for better looking</p>
                         </div>
                     </div> <!-- card end// -->
                   
@@ -51,7 +53,7 @@
                                                     {{i.heading}}
                                                 </b></td>
                                                 <td class="text-end">
-                                                    <a href={% url "admin_panel:delete_slide" slide_id=i.id%} class="btn bg-warning btn-md rounded font-sm">Delete</a>
+                                                    <a href={% url "admin_panel:delete_sub_banner" id=i.id%} class="btn bg-warning btn-md rounded font-sm">Delete</a>
                                                      
                                                 </td>
                                                 
@@ -59,7 +61,7 @@
                                            {% endfor %}
                                         </tbody>
                                     </table>
-                                    <p>Only 3 slides can be inserted into the home slide</p>
+                                    <p>Only 2 banners can be inserted </p>
                                 </div> <!-- table-responsive //end -->
                             </div> <!-- card-body end// -->
                         </div> <!-- card end// -->

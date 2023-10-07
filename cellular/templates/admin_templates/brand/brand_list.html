@@ -28,7 +28,8 @@
                         <tr>
                             <th>Brand</th>
                             <th class="text-end"> Active </th>
-                            <th class="text-end"> Action </th>
+                            <th class="text-end"> Block/Unblock </th>
+                            <th class="text-end"> Edit</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,13 +46,19 @@
                             
                             <td class="text-end">
                                 <div>
-                                    <span class="badge  bg-{% if user.is_active %}success {% else %}danger{% endif %} alert-success"> {{user.is_active}} </span>
+                                    <span class="badge  bg-{% if brand.is_active %}success {% else %}danger{% endif %} alert-success"> {{brand.is_active}} </span>
                                 </div>
                                
                             </td>
                             <td class="text-end">
                                 <div>
-                                    <a href="" class="btn btn-danger">action</a>
+                                    <a href={% url "admin_panel:block_unblock_brand" id=brand.id%} class="btn btn-warning">{%if brand.is_active%}Block {% else %} Unblock {% endif %} </a>
+                                </div>
+                               
+                            </td>
+                            <td class="text-end">
+                                <div>
+                                    <a href={% url "admin_panel:brand_edit" id=brand.id%} class="btn btn-warning">Edit</a>
                                 </div>
                                
                             </td>
