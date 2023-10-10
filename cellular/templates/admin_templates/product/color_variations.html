@@ -37,7 +37,10 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <td class="text-end">Color</th>
+                                                <td>Color</th>
+                                                <td class='text-end'>Status</th>
+                                                <th class='text-end'>Edit</th>
+                                                
                                                 
                                                
                                             </tr>
@@ -50,6 +53,19 @@
                                                 <td class="text-end"><b>
                                                     {{i.color_name}}
                                                 </b></td>
+                                                <td class="text-end">
+                                                    <div>
+                                                        <span class="badge  bg-{% if i.is_active %}success {% else %}danger{% endif %} alert-success"> {{i.is_active}} </span>
+                                                    </div>
+                                                   
+                                                </td>
+                                                <td class="text-end">
+                                                    <div>
+                                                        <a href={% url "admin_panel:color_edit" uid=i.uid %} class="btn btn-warning">Edit</a>
+                                                    </div>
+                                                   
+                                                </td>
+
                                                 
                                                 
                                             </tr>

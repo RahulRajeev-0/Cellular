@@ -1,0 +1,201 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+{% comment %} <section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Edit Brand</h2>
+                <div>
+                    
+                    <button class="btn btn-md rounded font-sm hover-up">Save</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Brand Edit</h4>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Product title</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="product_name">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Full description</label>
+                            <textarea placeholder="Type here" class="form-control" rows="4"></textarea>
+                        </div>
+                
+                        <div class="mb-4">
+                            <label class="form-label">Tax rate</label>
+                            <input type="text" placeholder="%" class="form-control" id="product_name">
+                        </div>
+                        <label class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" value="">
+                            <span class="form-check-label"> Make a template </span>
+                        </label>
+                    </form>
+                </div>
+            </div> <!-- card end// -->
+           
+        </div>
+        <div class="col-lg-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Media</h4>
+                </div>
+                <div class="card-body">
+                    <div class="input-upload">
+                        <img src="assets/imgs/theme/upload.svg" alt="">
+                        <input class="form-control" type="file">
+                    </div>
+                </div>
+            </div> 
+
+        </div>
+    </div>
+</section> {% endcomment %}
+
+
+{% comment %} <center>
+    <h1>Add Product Varients </h1>
+    <br><br>
+    
+        <section class="content-main">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Product Varients</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action='' Method='POST'>
+                                {% csrf_token %}
+
+                                {{form.as_p}}
+                                <input type='submit' value=' Add Product Varients ' class='btn btn-success'> 
+                            </form>
+                        </div>
+                    </div> <!-- card end// -->
+                  
+                </div>
+              
+            </div>
+        </section>
+       
+
+       
+    
+
+ 
+
+</center> {% endcomment %}
+<section class="content-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="content-header">
+                    <h2 class="content-title">Add New Product Variant</h2>
+                </div>
+            </div>
+        </div>
+
+        {% comment %} To show form errors {% endcomment %}
+        {% if form.errors %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger">
+                    <strong>Form errors:</strong>
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                        <li>{{ field }}: {{ errors }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <form action='' method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6">
+                    <h6>1. General info</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Product</label>
+                        {{ form.product }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Heading</label>
+                        {{ form.product_heading }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model Id</label>
+                        {{ form.model_id }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Is Active</label>
+                        {{ form.is_active }}
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h6>2. Variants</h6>
+                    <div class="mb-3">
+                        <label class="form-label d-block">RAM</label>
+                        {{ form.ram }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Color</label>
+                        {{ form.color }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6>3. Description</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Informative Description About Product</label>
+                        {{ form.product_detailed_description }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h6>4. Pricing & Stock</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Cost of product</label>
+                        {{ form.price }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Stock qty</label>
+                        {{ form.stock_qty }}
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h6>5. Media</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Thumbnail Image</label>
+                        {{ form.thambnail }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <input type="submit" value="Add Variant" class="btn btn-success">
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+{% endblock content %}

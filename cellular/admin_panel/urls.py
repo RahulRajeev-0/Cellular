@@ -32,11 +32,20 @@ urlpatterns = [
 
     path('product_listing/', views.product_listing, name ='product_listing'),
     path('add_product/', views.add_product, name ='add_product'),
+    path('product_edit/<uid>', views.product_edit, name='product_edit'),
     path('ram_list/', views.ram_list, name ='ram_list'),
+    path('ram_edit/<uid>', views.ram_edit, name = 'ram_edit'),
     path('color_list/', views.color_list, name ='color_list'),
+    path('color_edit/<uid>', views.color_edit, name = 'color_edit'),
+    path('product_varients_add/', views.product_varients_add, name='product_varients_add'),
+    path('product_varients_listing/', views.product_varients_listing, name='product_varients_listing'),
+    path('product_varients_edit/<uid>', views.product_varients_edit, name='product_varients_edit'),
+    path('product_images/', views.product_images, name='product_images'),
+    path("product_img_add/", views.product_img_add , name="product_img_add"),
+    path('product_img_delete/<uid>', views.product_img_delete , name='product_img_delete'),
 
 
-
+    
     # -----------------------Home page heading and banner rendering -------------------
 
     path('home_main_slider/', views.home_main_slider, name='home_main_slider'),

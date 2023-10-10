@@ -13,72 +13,62 @@
         <div class="col-lg-5 pb-5">
             <div id="product-carousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner border">
-
-    <!-- ===============  for loop for getting available photos in database about the product ==================== -->                    
-
-
-                    {% for image in product.product_images.all %}
-                    <div class="carousel-item active">
-                        <img class="w-100 h-100" src="/media/{{image.image}}" alt="Image">
+        
+                    {% for image in photos %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img class="w-100 h-100" src="{{ image.image.url }}" alt="Image">
                     </div>
                     {% endfor %}
-
+        
                 </div>
-                <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
-                    <i class="fa fa-2x fa-angle-left text-dark"></i>
+                <a class="carousel-control-prev" href="#product-carousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#product-carousel" data-slide="next">
-                    <i class="fa fa-2x fa-angle-right text-dark"></i>
+                <a class="carousel-control-next" href="#product-carousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
                 </a>
             </div>
         </div>
+        
 
         <div class="col-lg-7 pb-5">
 
         <!-- =================product name ================== -->
 
 
-            <h3 class="font-weight-semi-bold">{{product.product_name}}</h3>
+            <h3 class="font-weight-semi-bold">{{product_variants.product_heading}}</h3>
             <div class="d-flex mb-3">
-                <div class="text-primary mr-2">
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star"></small>
-                    <small class="fas fa-star-half-alt"></small>
-                    <small class="far fa-star"></small>
-                </div>
-                <small class="pt-1">(50 Reviews)</small>
+                <hp class="font-weight-light">{{product_variants.product.product_description}}</p>
             </div>
 
             <!--================ proudct price and discription is mensioned here==============-->
 
 
-            <h3 class="font-weight-semi-bold mb-4">{{product.price}}</h3>
+            <h6 class="font-weight-semi-bold mb-4">{% if product_variants.stock_qty %} ₹ {{product_variants.price}} {% else %} Out of Stock {% endif %} </h6>
             <p class="mb-4"> {{product.product_description}} </p>
 
 
 <!--=============== if variation for product is available then show them else don't ==================== -->
-
-        {% if product.ram_varient.count %}
-            <div class="d-flex mb-3">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Ram:</p>
-                <form>
-
- <!--======== for getting the ram variation using loop ======-->
-
-                    {% for ram  in product.ram_varient.all %}
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="size-1" name="size">
-                        <label class="custom-control-label" for="size-1"> {{ram.ram_no}} </label>
-                    </div>
-                    {% endfor %}
-                </form>
-            </div>
-            {% endif %}
+{% if ram_variants %}
+<div class="d-flex mb-3">
+    <p class="text-dark font-weight-medium mb-0 mr-3">Ram:</p>
+    <form>
+        <!-- for getting the ram variation using loop -->
+        {% for ram in ram_variants %}
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" class="custom-control-input" id="ram-{{ ram.id }}" name="ram" value="{{ ram.id }}">
+            <label class="custom-control-label" for="ram-{{ ram.id }}">{{ ram.ram_no }}</label>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+{% endif %}
 
 <!--=============== if variation for product is available then show them else don't ==================== -->
 
-            {% if product.color_varient.count %}
+            {% if color_varients %}
             <div class="d-flex mb-4">
                 <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
                 <form>
@@ -86,7 +76,7 @@
             
                     <!--======== for getting the color variation using loop ======-->
 
-                    {% for color in product.color_varient.all %}
+                    {% for color in color_varients  %}
                     <div class="custom-control custom-radio custom-control-inline">
                         <input type="radio" class="custom-control-input" id="color-1" name="color">
                         <label class="custom-control-label" for="color-1"> {{color.color_name}} </label>
@@ -94,26 +84,17 @@
                     {% endfor %}
                 </form>
             </div>
-
             {% endif %}
+        
 
 
             <div class="d-flex align-items-center mb-4 pt-2">
                 <div class="input-group quantity mr-3" style="width: 130px;">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-minus" >
-                        <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                    <input type="text" class="form-control bg-secondary text-center" value="1">
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary btn-plus">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                    </div>
+                    {% comment %} <button class="btn btn-warning px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Wish List</button> {% endcomment %}
                 </div>
-                <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                <button class="btn btn-warning px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
             </div>
+            
             <div class="d-flex pt-2">
                 <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
                 <div class="d-inline-flex">
@@ -136,50 +117,43 @@
     <div class="row px-xl-5">
         <div class="col">
             <div class="nav nav-tabs justify-content-center border-secondary mb-4">
-                <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Description</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Information</a>
-                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>
+                <a class="nav-item nav-link active text-warning" data-toggle="tab" href="#tab-pane-1">Description</a>
+                <a class="nav-item nav-link text-warning" data-toggle="tab" href="#tab-pane-2">Information</a>
+                <a class="nav-item nav-link text-warning" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-pane-1">
                     <h4 class="mb-3">Product Description</h4>
-                    <p>Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea. Consetetur vero aliquyam invidunt duo dolores et duo sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod consetetur invidunt sed sed et, lorem duo et eos elitr, sadipscing kasd ipsum rebum diam. Dolore diam stet rebum sed tempor kasd eirmod. Takimata kasd ipsum accusam sadipscing, eos dolores sit no ut diam consetetur duo justo est, sit sanctus diam tempor aliquyam eirmod nonumy rebum dolor accusam, ipsum kasd eos consetetur at sit rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr sanctus eirmod takimata dolor ea invidunt.</p>
-                    <p>Dolore magna est eirmod sanctus dolor, amet diam et eirmod et ipsum. Amet dolore tempor consetetur sed lorem dolor sit lorem tempor. Gubergren amet amet labore sadipscing clita clita diam clita. Sea amet et sed ipsum lorem elitr et, amet et labore voluptua sit rebum. Ea erat sed et diam takimata sed justo. Magna takimata justo et amet magna et.</p>
-                </div>
+                    <p> {{product_variants.product.product_description}} </p>
+                    <p></p>
+                </div> 
                 <div class="tab-pane fade" id="tab-pane-2">
-                    <h4 class="mb-3">Additional Information</h4>
-                    <p>Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea. Consetetur vero aliquyam invidunt duo dolores et duo sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod consetetur invidunt sed sed et, lorem duo et eos elitr, sadipscing kasd ipsum rebum diam. Dolore diam stet rebum sed tempor kasd eirmod. Takimata kasd ipsum accusam sadipscing, eos dolores sit no ut diam consetetur duo justo est, sit sanctus diam tempor aliquyam eirmod nonumy rebum dolor accusam, ipsum kasd eos consetetur at sit rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr sanctus eirmod takimata dolor ea invidunt.</p>
+                    <h4 class="mb-3">Product Information</h4>
+                    
+                   <h6> {{product_variants.product_heading}} </h6>
+                    <p>{{product_variants.product_detailed_description}}</p>
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item px-0">
-                                    Sit erat duo lorem duo ea consetetur, et eirmod takimata.
+                                    RAM = {{product_variants.ram}}
                                 </li>
                                 <li class="list-group-item px-0">
-                                    Amet kasd gubergren sit sanctus et lorem eos sadipscing at.
+                                    Color = {{product_variants.color}}
                                 </li>
                                 <li class="list-group-item px-0">
-                                    Duo amet accusam eirmod nonumy stet et et stet eirmod.
-                                </li>
-                                <li class="list-group-item px-0">
-                                    Takimata ea clita labore amet ipsum erat justo voluptua. Nonumy.
+                                    
                                 </li>
                               </ul> 
                         </div>
                         <div class="col-md-6">
                             <ul class="list-group list-group-flush">
+                                
                                 <li class="list-group-item px-0">
-                                    Sit erat duo lorem duo ea consetetur, et eirmod takimata.
+                                    
                                 </li>
-                                <li class="list-group-item px-0">
-                                    Amet kasd gubergren sit sanctus et lorem eos sadipscing at.
-                                </li>
-                                <li class="list-group-item px-0">
-                                    Duo amet accusam eirmod nonumy stet et et stet eirmod.
-                                </li>
-                                <li class="list-group-item px-0">
-                                    Takimata ea clita labore amet ipsum erat justo voluptua. Nonumy.
-                                </li>
+                                
+                                
                               </ul> 
                         </div>
                     </div>

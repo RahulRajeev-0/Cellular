@@ -37,7 +37,10 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th scope="col" class="text-end">RAM IN GB</th>
+                                                <th scope="col">RAM IN GB</th>
+                                                <th class='text-end' >Status</th>
+                                                <th class='text-end'>Edit</th>
+                                                
                                                 
                                                 
                                             </tr>
@@ -47,9 +50,23 @@
                                             <tr>
                                                 
                                                 <td>{{forloop.counter}}</td>
-                                                <td class="text-end"><b>
+                                                <td><b>
                                                     {{i.ram_no}}
                                                 </b></td>
+                                                
+                                                <td class="text-end">
+                                                    <div>
+                                                        <span class="badge  bg-{% if i.is_active %}success {% else %}danger{% endif %} alert-success"> {{i.is_active}} </span>
+                                                    </div>
+                                                   
+                                                </td>
+                                                <td class="text-end">
+                                                    <div>
+                                                        <a href={% url "admin_panel:ram_edit" uid=i.uid %} class="btn btn-warning">Edit</a>
+                                                    </div>
+                                                   
+                                                </td>
+                                                
                                                 
                                                 
                                             </tr>

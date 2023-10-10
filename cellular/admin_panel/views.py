@@ -10,12 +10,12 @@ from django.shortcuts import get_object_or_404
 
 # >>>>>>>>>>>>>>>>>>> models <<<<<<<<<<<<<<<<<<<<
 from account_management.models import Account
-from account_management.models import HomeMainSlide,HomeSubBanner
-from product.models import Brand,Product,RamVarient,ColorVarient
+from account_management.models import HomeMainSlide, HomeSubBanner
+from product.models import Brand, Product, RamVarient, ColorVarient , Product_varients , ProductImage
 
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
-from product.forms import BrandForm,ProductForm,RamForm,ColorForm
-from account_management.forms import HomeMainSliderForm, HomeSubBannerForm
+from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
+from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
 
 
 
@@ -179,22 +179,132 @@ def product_listing(request):
 
 
 
+
+def product_edit(request, uid):
+     if 'email' not  in request.session:
+        return redirect ('admin_panel:admin_login')
+     product = get_object_or_404(Product, uid = uid)
+    
+     if request.method == 'POST':
+        form = ProductForm(request.POST, instance = product)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:product_listing')
+     else:
+        form = ProductForm(instance = product)
+
+     return render(request, 'admin_templates/product/product_edit.html', {'form': form, 'product': product})
+
 # -------------------------------------  function for adding product ----------------------------------
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def add_product(request):
-     if 'email' not in request.session:
+    if 'email' not in request.session:
+        return redirect('admin_panel:admin_login')
+    if request.method == 'POST':
+        form = Product_varientsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:product_listing')
+    else:
+        # Filter active brands only
+        active_brands = Brand.objects.filter(is_active=True)
+        form = ProductForm(initial={'brand': active_brands.first()})  # Preselect the first active brand
+        form.fields['brand'].queryset = active_brands  # Set the queryset for the brand field
+
+    return render(request, 'admin_templates/product/add_product.html', {'form': form})
+
+
+
+
+# fucntion to list the varient of product 
+
+def product_varients_listing(request):
+    varients = Product_varients.objects.all()
+    context = {'varients':varients}
+    return render (request, 'admin_templates/product/varients_listing.html',context)
+
+
+def product_varients_edit(request, uid):
+    if 'email' not in request.session :
         return redirect ('admin_panel:admin_login')
-     if request.method=='POST':
-          form=ProductForm(request.POST)
-          if form.is_valid():
-               form.save()
-               return redirect('admin_panel:product_listing')
-          
-     form= ProductForm
-     return render(request,'admin_templates/product/add_product.html',{'form':form})
+    
+    product_varient = get_object_or_404(Product_varients, uid = uid)
+
+    if request.method == "POST" :
+        form = Product_varientsForm(request.POST, request.FILES, instance = product_varient)
+        if form.is_valid():
+            form.save()
+            return redirect ('admin_panel:product_varients_listing')
+        else:
+            print(form.errors)
+    else:
+        active_product = Product.objects.filter(is_active = True)
+        active_ram = RamVarient.objects.filter(is_active = True)
+        active_color = ColorVarient.objects.filter(is_active = True)
+        form = Product_varientsForm(instance = product_varient)
+        form.fields['product'].queryset = active_product
+        form.fields['ram'].queryset = active_ram
+        form.fields['color'].queryset = active_color
+
+    return render (request, 'admin_templates/product/edit_varients.html', {'form':form, 'product_varient':product_varient})
 
 
+
+
+
+# fucntion to add product varients 
+
+def product_varients_add(request):
+    if 'email' not in request.session :
+        return redirect ('admin_panel:admin_login')
+    if request.method == "POST" :
+        form = Product_varientsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect ('admin_panel:product_varients_listing')
+        else:
+            print(form.errors)
+    else:
+        active_product = Product.objects.filter(is_active = True)
+        active_ram = RamVarient.objects.filter(is_active = True)
+        active_color = ColorVarient.objects.filter(is_active = True)
+        form = Product_varientsForm(initial={'product':active_product.first(),
+                                             'ram':active_ram.first(),
+                                             'color':active_color.first()})
+        form.fields['product'].queryset = active_product
+        form.fields['ram'].queryset = active_ram
+        form.fields['color'].queryset = active_color
+    
+    
+    return render(request, 'admin_templates/product/add_product_varients.html',{'form':form})
+
+
+def product_images(request):
+    images = ProductImage.objects.all()
+    return render (request, 'admin_templates/product/product_images.html', {"images":images})
+
+def product_img_add(request):
+    if request.method == 'POST':
+        form = ProductVarientImageForm(request.POST , request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect ('admin_panel:product_images')
+        else:
+            print(form.errors)
+    else:
+        form = ProductVarientImageForm()
+    return render (request, 'admin_templates/product/add_product_img.html', {'form':form})
+
+
+
+def product_img_delete(request, uid):
+    try:
+        img_to_delete = ProductImage.objects.get(uid=uid)
+        img_to_delete.delete()
+    except:
+        pass
+    return redirect ('admin_panel:product_images')
 
 
 
@@ -284,6 +394,27 @@ def ram_list(request):
 
 
 
+
+# ----------------- function for editing existing ram -----------------
+
+def ram_edit(request, uid):
+     if 'email' not  in request.session:
+        return redirect ('admin_panel:admin_login')
+     ram = get_object_or_404(RamVarient, uid = uid)
+    
+     if request.method == 'POST':
+        form = RamForm(request.POST, instance = ram)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:ram_list')
+     else:
+        form = RamForm(instance = ram)
+
+     return render(request, 'admin_templates/product/ram_edit.html', {'form': form, 'ram': ram})
+
+
+
+
 # -----------------function to add color -------------------
 
 def color_list(request):
@@ -296,6 +427,28 @@ def color_list(request):
         form = ColorForm
     list = ColorVarient.objects.all()
     return render(request,'admin_templates/product/color_variations.html', {'form':form, 'list':list})
+
+
+
+
+# ----------------- function for editing color--------------------
+
+def color_edit(request, uid):
+     if 'email' not  in request.session:
+        return redirect ('admin_panel:admin_login')
+     color = get_object_or_404(ColorVarient, uid = uid)
+    
+     if request.method == 'POST':
+        form = ColorForm(request.POST, instance = color)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:color_list')
+     else:
+        form = ColorForm(instance = color)
+
+     return render(request, 'admin_templates/product/color_edit.html', {'form': form, 'color': color})
+
+
 
 
 # --------------- fucntion for ad logout ---------------------------

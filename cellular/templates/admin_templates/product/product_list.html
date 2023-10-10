@@ -8,7 +8,7 @@
 <section class="content-main">
     <div class="content-header">
         <div>
-            <h2 class="content-title card-title">User List </h2>
+            <h2 class="content-title card-title">Product List </h2>
             
         </div>
         {% comment %} <div>
@@ -47,8 +47,8 @@
                             <th>No</th>
                             <th scope="col">Product name</th>
                             <th scope='col'>Brand</th>
-                            <th scope='col'>Edit </th>
-                            <th scope="col" class="text-end">Delete</th>
+                            <th scope='col' class="text-end">Status </th>
+                            <th scope="col" class="text-end">Edit</th>
                             
                           
                             {% comment %} <th scope="col">Date</th> {% endcomment %}
@@ -62,8 +62,19 @@
                             <td>{{forloop.counter}}</td>
                             <td><b>{{product.product_name }}</b></td>
                             <td> {{product.brand}} </td>
-                            <td> <a href="{% url "admin_panel:add_product" %}" class="btn btn-warning ">Edit</a></td>
-                            <td class='text-end'> <a href="{% url "admin_panel:add_product" %}" class="btn btn-danger ">Delete</a></td>
+                            <td class="text-end">
+                                <div>
+                                    <span class="badge  bg-{% if product.is_active %}success {% else %}danger{% endif %} alert-success"> {{product.is_active}} </span>
+                                </div>
+                               
+                            </td>
+                        
+                            <td class="text-end">
+                                <div>
+                                    <a href={% url "admin_panel:product_edit" uid=product.uid %} class="btn btn-warning">Edit</a>
+                                </div>
+                               
+                            </td>
 
                             
                             
