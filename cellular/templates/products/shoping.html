@@ -158,9 +158,16 @@
             <a href="{% url 'product:product_details' vuid=variant.uid puid=variant.product.uid  %}" class="btn btn-sm text-dark p-0">
                 <i class="fas fa-eye text-warning mr-1"></i>View Detail
             </a>
-            <a href="" class="btn btn-sm text-dark p-0">
-                <i class="fas fa-shopping-cart text-warning mr-1"></i>Add To Cart
+            
+            {% if variant.stock_qty  %}
+            <a href="{% url "cart:add_cart" product_uid=variant.uid %}" class="btn btn-sm text-dark p-0">
+                <i class="fas fa-shopping-cart text-success mr-1"></i>Add To Cart
             </a>
+            {% else %}
+            <a href="" class="btn btn-sm text-dark p-0">
+                <i class="fas fa-times mr-1 text-danger"></i>Out of Stock
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>

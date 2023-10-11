@@ -86,15 +86,34 @@
             </div>
             {% endif %}
         
-
-
-            <div class="d-flex align-items-center mb-4 pt-2">
+            {% if product_variants.stock_qty %}  
+              
+            {% if in_cart %}
+            {% comment %} <div class="d-flex align-items-center mb-4 pt-2"> {% endcomment %}
                 <div class="input-group quantity mr-3" style="width: 130px;">
-                    {% comment %} <button class="btn btn-warning px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Wish List</button> {% endcomment %}
+                    
                 </div>
-                <button class="btn btn-warning px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                <a href="#" class="btn btn-success "><i class="fa fa-check mr-1"></i>Added in Cart</a>
+                <a href="{% url "cart:cart_page" %}" class="btn btn-outline-info "><i class="fa fa-eye mr-1"></i>View in Cart</a>
+            </div>
+
+            
+            {% else %}
+
+            {% comment %} <div class="d-flex align-items-center mb-4 pt-2"> {% endcomment %}
+                <div class="input-group quantity mr-3" style="width: 130px;">
+                    
+                </div>
+                <a href="{% url "cart:add_cart" product_uid=product_variants.uid %}" class="btn btn-outline-success "><i class="fa fa-shopping-cart mr-1"></i>Add to Cart</a>
+                
             </div>
             
+            {% endif %}
+
+            
+            {% endif %}
+
+
             <div class="d-flex pt-2">
                 <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
                 <div class="d-inline-flex">

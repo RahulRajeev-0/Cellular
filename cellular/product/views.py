@@ -1,6 +1,8 @@
 from django.shortcuts import render,HttpResponse
 from django.shortcuts import get_object_or_404
 from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
+from cart.models import Cart,CartItem
+from cart.views import _cart_id
 
 
 # Create your views here.
@@ -20,5 +22,16 @@ def product_details(request, vuid , puid):
     ram_variants = RamVarient.objects.filter(product_varients = product_variant_instance)
     color_varients = ColorVarient.objects.filter(product_varients = product_variant_instance)
     photos = product_variant_instance.product_images.all()
-    return render(request, 'products/product_details.html', context = {'product_variants': product_variant_instance, 'ram_variants': ram_variants , 'color_varients':color_varients , 'photos':photos })
+
+    try:
+        in_cart = CartItem.objects.filter(cart__cart_id = _cart_id(request), product = product_variant_instance).exists()
+    except:
+        pass
+    return render(request, 'products/product_details.html', context = {
+        'product_variants': product_variant_instance,
+        'ram_variants': ram_variants , 
+        'color_varients':color_varients ,
+        'photos':photos ,
+        'in_cart':in_cart ,
+            })
     
