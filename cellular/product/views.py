@@ -3,17 +3,23 @@ from django.shortcuts import get_object_or_404
 from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
 from cart.models import Cart,CartItem
 from cart.views import _cart_id
-
+from django.core.paginator import EmptyPage , PageNotAnInteger , Paginator
 
 # Create your views here.
-# def shoping_page(request):
-#     context={'products':Product.objects.all()}
-#     return render(request,'products/shoping.html',context)
+
 
 def shoping_page(request):
     products = Product.objects.all()
-    product_variants = Product_varients.objects.all()  # Get all product variants
-    context = {'products': products, 'product_variants': product_variants}
+    product_variants = Product_varients.objects.all().filter(is_active = True).order_by('uid')  # Get all product variants
+    paginator = Paginator(product_variants , 3)
+    page = request.GET.get('page')
+    paged_products = paginator.get_page(page)
+    
+    context = {
+        'products': products, 
+        'product_variants': paged_products,
+        }
+    
     return render(request, 'products/shoping.html', context)
 
 
