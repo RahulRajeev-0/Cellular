@@ -202,7 +202,7 @@ def add_product(request):
     if 'email' not in request.session:
         return redirect('admin_panel:admin_login')
     if request.method == 'POST':
-        form = Product_varientsForm(request.POST, request.FILES)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('admin_panel:product_listing')
@@ -277,7 +277,7 @@ def product_varients_add(request):
         form.fields['color'].queryset = active_color
     
     
-    return render(request, 'admin_templates/product/add_product_varients.html',{'form':form})
+    return render(request, 'admin_templates/product/edit_varients.html',{'form':form})
 
 
 def product_images(request):

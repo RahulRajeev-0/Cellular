@@ -164,7 +164,7 @@
                 <i class="fas fa-shopping-cart text-success mr-1"></i>Add To Cart
             </a>
             {% else %}
-            <a href="" class="btn btn-sm text-dark p-0">
+            <a href="" class="btn btn-sm text-dark p-0 disabled">
                 <i class="fas fa-times mr-1 text-danger"></i>Out of Stock
             </a>
             {% endif %}
@@ -209,7 +209,7 @@
 
                   {% if product_variants.number == i  %}
 
-                    <li class="page-item active-warning"><a class="page-link  text-warning" href="#">{{i}}</a></li>
+                    <li class="page-item active-warning"><a class="page-link  text-warning " href="#">{{i}}</a></li>
                     {% else %}
                     <li class="page-item active-warning"><a class="page-link  text-warning" href="?page={{i}}">{{i}}</a></li>
                 {% endif %}
@@ -226,7 +226,7 @@
                 </li>
 
                 {% else %}
-                <li class="page-item">
+                <li class="page-item disabled">
                     <a class="page-link" href="#" aria-label="Next">
                       <span aria-hidden="true">&raquo;</span>
                       <span class="sr-only">Next</span>
