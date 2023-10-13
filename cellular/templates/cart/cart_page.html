@@ -6,7 +6,7 @@
 {% load static %}
 
 <div class="container-fluid bg-secondary  mb-5">
-    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100px;">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
         <h1 class="font-weight-semi-bold  text-uppercase mb-3">Shopping Cart</h1>
         <div class="d-inline-flex">
             <p class="m-0 "><a class='text-dark' href="">Home</a></p>
@@ -100,7 +100,7 @@
                         <h5 class="font-weight-bold">Total</h5>
                         <h5 class="font-weight-bold">₹{{grand_total}}</h5>
                     </div>
-                    <button class="btn btn-block btn-warning my-3 py-3">Proceed To Checkout</button>
+                    <a href="{% url "cart:checkout" %}" class="btn btn-block btn-warning my-3 py-3">Proceed To Checkout</a>
                 </div>
             </div>
         </div>

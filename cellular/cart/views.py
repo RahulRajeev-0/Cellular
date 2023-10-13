@@ -1,6 +1,6 @@
 from django.shortcuts import render , redirect , HttpResponse
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth.decorators import login_required
 
 # -------------------- models --------------------------
 from product.models import Product_varients
@@ -21,36 +21,68 @@ def _cart_id(request):
 
 # add to cart function that adds the products to the cart 
 def add_cart(request, product_uid):
-    product = Product_varients.objects.get(uid=product_uid) # get product 
-    try :
-        cart = Cart.objects.get(cart_id = _cart_id(request))  # get the cart using the cart_id present in the session 
-    except Cart.DoesNotExist:
-        cart = Cart.objects.create(
-            cart_id = _cart_id(request)
-        )
-        cart.save()
-
-    try :
-        cart_item = CartItem.objects.get(product = product , cart = cart)
-        cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
-        cart_item.save()
+    current_user = request.user
+    if current_user.is_authenticated :
+        product = Product_varients.objects.get(uid=product_uid) # get product 
         
-    except CartItem.DoesNotExist:
-        cart_item = CartItem.objects.create(
-            product = product ,
-            quantity = 1 ,
-            cart = cart ,
-            )
-        cart_item.save()
+        is_cart_item_exits = CartItem.objects.filter(product = product , user = current_user).exists()
+        try :
+            cart_item = CartItem.objects.get(product = product , user = current_user)
+            cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
+            cart_item.save()
+            
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(
+                product = product ,
+                quantity = 1 ,
+                user = current_user ,
+                )
+            cart_item.save()
     
-    return redirect ('cart:cart_page')
+        return redirect ('cart:cart_page')
+    
+    # if the user is not authenticated 
+    else:
+        product = Product_varients.objects.get(uid = product_uid) # get product 
+        try :
+            cart = Cart.objects.get(cart_id = _cart_id(request))  # get the cart using the cart_id present in the session 
+        except Cart.DoesNotExist:
+            cart = Cart.objects.create(
+                cart_id = _cart_id(request)
+            )
+            cart.save()
+
+
+        is_cart_item_exits = CartItem.objects.filter(product = product , cart = cart).exists()
+        try :
+            cart_item = CartItem.objects.get(product = product , cart = cart)
+            cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
+            cart_item.save()
+            
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(
+                product = product ,
+                quantity = 1 ,
+                cart = cart ,
+                )
+            cart_item.save()
+    
+        return redirect ('cart:cart_page')
 
 
 
 def remove_cart(request , product_uid):
-    cart = Cart.objects.get(cart_id = _cart_id(request))
+    
     product = get_object_or_404(Product_varients , uid = product_uid)
-    cart_item = CartItem.objects.get(product=product , cart = cart)
+    try:
+        if request.user.is_authenticated:
+            cart_item = CartItem.objects.get(product=product , user = request.user)
+        else:
+            cart = Cart.objects.get(cart_id = _cart_id(request))
+            cart_item = CartItem.objects.get(product=product , cart = cart)
+    except:
+        pass
+
     if cart_item.quantity > 1 :
         cart_item.quantity -= 1
         cart_item.save()
@@ -58,11 +90,18 @@ def remove_cart(request , product_uid):
         cart_item.delete()
     return redirect ('cart:cart_page')
 
+
+
+
 def remove_cart_item(request, product_uid):
-    cart = Cart.objects.get(cart_id = _cart_id(request))
     product = get_object_or_404(Product_varients, uid = product_uid)
-    cart_item = CartItem.objects.get(product = product , cart = cart)
-    cart_item.delete()
+    if request.user.is_authenticated:
+        cart_item = CartItem.objects.get(product = product , user = request.user)
+        cart_item.delete()
+    else:
+        cart = Cart.objects.get(cart_id = _cart_id(request))    
+        cart_item = CartItem.objects.get(product = product , cart = cart)
+        cart_item.delete()
     return redirect ('cart:cart_page')
 
 
@@ -70,6 +109,37 @@ def remove_cart_item(request, product_uid):
 
 # function to render the cart page 
 def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
+    tax = 0
+    grand_total = 0
+    
+    try :
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user = request.user, is_active = True)
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, is_active = True)
+        for cart_item in cart_items:
+            total += (cart_item.product.price * cart_item.quantity)
+            quantity += cart_item.quantity
+        tax = (2 * total)/100
+        grand_total = total + tax
+    except :
+        pass  # ingnore 
+    
+    context = { 
+        'total': total ,
+        'quantity': quantity ,
+        'cart_items':cart_items ,
+        'tax': tax,
+        'grand_total':grand_total,
+
+    }
+    return render(request, 'cart/cart_page.html', context)
+
+
+
+@login_required(login_url='account_management:user_login')
+def checkout(request, total = 0 , quantity = 0 , cart_items = None):
     tax = 0
     grand_total = 0
     
@@ -92,4 +162,4 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
         'grand_total':grand_total,
 
     }
-    return render(request, 'cart/cart_page.html', context)
+    return render (request, 'cart/checkout.html', context)

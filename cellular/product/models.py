@@ -13,9 +13,9 @@ from PIL import Image
 # ------------------------- model for adding brand --------------
 
 class Brand( models.Model ):
-    brand_name          = models.CharField(max_length = 100)
-    slug                = models.SlugField(unique = True, null = True ,blank = True)
-    is_active           = models.BooleanField(default = True)
+    brand_name = models.CharField(max_length = 100)
+    slug = models.SlugField(unique = True, null = True ,blank = True)
+    is_active = models.BooleanField(default = True)
     
     def save(self, *args, **kwargs):
         self.slug = slugify(self.brand_name)
@@ -57,9 +57,9 @@ class RamVarient(BaseModel):
 # ---------------- model for storing the product details --------------------
 
 class Product(BaseModel):
-    product_name        = models.CharField(max_length = 100)
-    slug                = models.SlugField(unique = True, null = True ,blank = True)
-    brand               = models.ForeignKey(Brand, on_delete = models.CASCADE, related_name = 'products')
+    product_name = models.CharField(max_length = 100)
+    slug = models.SlugField(unique = True, null = True ,blank = True)
+    brand = models.ForeignKey(Brand, on_delete = models.CASCADE, related_name = 'products')
     product_description = models.TextField()
     is_active = models.BooleanField(default=True)
     

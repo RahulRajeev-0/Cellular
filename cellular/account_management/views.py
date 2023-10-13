@@ -15,7 +15,8 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from account_management.models import HomeMainSlide,HomeSubBanner
-
+from cart.models import Cart , CartItem
+from cart.views import _cart_id
 
 
 
@@ -54,8 +55,17 @@ def user_login(request):
         upass=request.POST.get('password')
         user=authenticate(request,email=uemail,password=upass)
         if user is not None:
-           
-            messages.success(request,"Loged In successfully")
+            try:
+                cart = Cart.objects.get(cart_id = _cart_id(request))
+                is_cart_item_exits = CartItem.objects.filter(cart = cart).exists()
+                if is_cart_item_exits:
+                    cart_item = CartItem.objects.filter(cart = cart)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+                    
+            except:
+                pass
             request.session['email']=uemail
             login(request,user)
             return redirect ('account_management:index')
@@ -102,29 +112,29 @@ def user_signUp(request):
                 pass
 
             try:
-                if Account.objects.get(user_name=uname):
-                    messages.warning(request,'Username already exist')
+                if Account.objects.get(user_name = uname):
+                    messages.warning(request, 'Username already exist')
                     return redirect('account_management:user_signUp')
             except:
                 pass
             
             #code for checking the email 
             try:
-                if Account.objects.get(email=email):
-                    messages.warning(request,'Email already exist !')
+                if Account.objects.get(email = email):
+                    messages.warning(request, 'Email already exist !')
                     return redirect ('account_management:user_signUp')
             except:
                 pass
 
             if ' ' in email or '.com' not in email:
-                messages.warning(request,"Enter a valid email id 🫤!")
+                messages.warning(request, "Enter a valid email id 🫤!")
                 return redirect('account_management:user_signUp')
             else:
                 pass
 
 
             #code for checking phone number 
-            if len(phone)<10 or len(phone)>12:
+            if len(phone) < 10 or len(phone) > 12:
                 messages.warning(request,"Enter a valid phone number !")
                 return redirect('account_management:user_signUp')
             else:
@@ -136,20 +146,30 @@ def user_signUp(request):
                 pass
 
             #code for checking the password 
-            if pass1!=pass2:
-                messages.warning(request,"Passwords do not match. Please make sure the password and confirm password fields are identical")
+            if pass1 != pass2:
+                messages.warning(request, "Passwords do not match. Please make sure the password and confirm password fields are identical")
                 return redirect('account_management:user_signUp')
             else:
                 pass
-            if len(pass1)<8:
-                messages.warning(request,"Password must contains atleast 8 characters")
+            if len(pass1) < 8:
+                messages.warning(request, "Password must contains atleast 8 characters")
                 return redirect('account_management:user_signUp')
             else:
                 pass
 
-            user=Account.objects.create_user(uname,email,phone,pass1)
-            messages.success(request,"OTP Sent to you email !")
+            user=Account.objects.create_user(uname, email, phone, pass1)
+            messages.success(request, "OTP Sent to you email !")
             request.session['email']=email
+            try:
+                cart = Cart.objects.get(cart_id = _cart_id(request))
+                is_cart_item_exits = CartItem.objects.filter(cart = cart).exists()
+                if is_cart_item_exits:
+                    cart_item = CartItem.objects.filter(cart = cart)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
             return redirect('account_management:otp_generation')
 
     return render(request,'account_management/user_signUp.html')
