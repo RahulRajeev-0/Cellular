@@ -1,7 +1,7 @@
 from django.shortcuts import render , redirect , HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 # -------------------- models --------------------------
 from product.models import Product_varients
 from cart.models import Cart , CartItem
@@ -28,9 +28,12 @@ def add_cart(request, product_uid):
         is_cart_item_exits = CartItem.objects.filter(product = product , user = current_user).exists()
         try :
             cart_item = CartItem.objects.get(product = product , user = current_user)
-            cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
-            cart_item.save()
-            
+            if cart_item.product.stock_qty > cart_item.quantity:   # checking the quantiy in stock and cart quantity 
+                cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
+                cart_item.save()
+            else:
+                messages.warning(request, "Oops! It looks like the quantity you're trying to add is more than what we currently have in stock. Please adjust the quantity and try again. ")
+                return redirect ('cart:cart_page')
         except CartItem.DoesNotExist:
             cart_item = CartItem.objects.create(
                 product = product ,
@@ -56,8 +59,12 @@ def add_cart(request, product_uid):
         is_cart_item_exits = CartItem.objects.filter(product = product , cart = cart).exists()
         try :
             cart_item = CartItem.objects.get(product = product , cart = cart)
-            cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
-            cart_item.save()
+            if cart_item.product.stock_qty > cart_item.quantity:
+                cart_item.quantity += 1         #cart_item.quantity = cart_item.quantity + 1 
+                cart_item.save()
+            else:
+                messages.warning(request, "Oops! It looks like the quantity you're trying to add is more than what we currently have in stock. Please adjust the quantity and try again. ")
+                return redirect ('cart:cart_page')
             
         except CartItem.DoesNotExist:
             cart_item = CartItem.objects.create(
