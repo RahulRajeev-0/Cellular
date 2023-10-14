@@ -83,9 +83,13 @@
                 <a class="menu-link" href={% url "admin_panel:brand_list"  %}> <i class="icon material-icons md-stars"></i>
                     <span class="text">Brands</span> </a>
             </li>
+            <li class="menu-item">
+                <a class="menu-link" href={% url "category:add_category" %}> <i class="icon material-icons md-stars"></i>
+                    <span class="text">Categories</span> </a>
+            </li>
             <li class="menu-item has-submenu">
                 <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-comment"></i></i>
-                    <span class="text">Home Banners</span>
+                    <span class="text">Banners Management</span>
                 </a>
                 <div class="submenu">
                     <a href={% url "admin_panel:home_main_slider" %}>Home Main Slide</a>

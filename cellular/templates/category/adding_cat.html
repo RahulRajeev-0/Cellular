@@ -1,0 +1,106 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<center>
+    <h1>Add Category </h1>
+    <p> Form to add Category </p>
+    <br><br>
+    
+        <section class="content-main">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Category</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="{% url 'category:add_category' %}" method="POST" enctype="multipart/form-data">
+
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type='submit' value='Add' class='btn btn-success'>
+                            </form>
+                            
+                        </div>
+                    </div> <!-- card end// -->
+                  
+                </div>
+                <div class="col-lg-6">
+                    <section class="content-main">
+                        <div class="card ">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th scope="col">Category</th>
+                                                <th class='text-end' >Status</th>
+                                                <th class='text-end'>Edit</th>
+                                                <th class='text-end'>Delete</th>
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {%for i in list %}
+                                            <tr>
+                                                
+                                                <td>{{forloop.counter}}</td>
+                                                <td><b>
+                                                    {{i.cat_name}}
+                                                </b></td>
+                                                
+                                                <td class="text-end">
+                                                    <div>
+                                                        <span class="badge  bg-{% if i.is_active %}success {% else %}danger{% endif %} alert-success"> {{i.is_active}} </span>
+                                                    </div>
+                                                   
+                                                </td>
+                                                <td class="text-end">
+                                                    <div>
+                                                        <a href={% url "category:edit_cat" cat_id=i.id %} class="btn btn-warning">Edit</a>
+                                                    </div>
+                                                   
+                                                </td>
+                                                <td class="text-end">
+                                                    <div>
+                                                        <a href={% url "category:edit_cat" cat_id=i.id %} class="btn btn-danger">Delete</a>
+                                                    </div>
+                                                   
+                                                </td>
+                                                
+                                                
+                                                
+                                            </tr>
+                                           {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    
+                                </div> <!-- table-responsive //end -->
+                            </div> <!-- card-body end// -->
+                        </div> <!-- card end// -->
+
+                    </section>
+                </div>
+
+              
+            </div>
+        </section>
+       
+
+       
+    
+
+ 
+
+</center>
+
+
+
+
+{% endblock content %}

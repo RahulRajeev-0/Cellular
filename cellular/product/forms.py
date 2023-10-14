@@ -7,7 +7,7 @@ class BrandForm(ModelForm):
         model=Brand
         fields='__all__'
 
-        widgets={
+        widgets = {
             'brand_name':forms.TextInput(attrs={'class':'form-control'}),
             'slug':forms.TextInput(attrs={'class':'form-control'}),
             #'is_active':forms.BooleanField()
@@ -24,6 +24,7 @@ class ProductForm(ModelForm):
             'product_name':forms.TextInput(attrs={'class':'form-control'}),
              'slug':forms.TextInput(attrs={'class':'form-control'}),
              'brand':forms.Select(attrs={'class':'form-control'}),
+             'product_category':forms.Select(attrs={'class':'form-control'}),
              
 
          }

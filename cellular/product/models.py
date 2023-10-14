@@ -2,7 +2,7 @@ from django.db import models
 from base.models import BaseModel
 from django.utils import timezone
 from django.utils.text import slugify
-
+from categoryManagement.models import Category
 
 from PIL import Image
 
@@ -60,14 +60,22 @@ class Product(BaseModel):
     product_name = models.CharField(max_length = 100)
     slug = models.SlugField(unique = True, null = True ,blank = True)
     brand = models.ForeignKey(Brand, on_delete = models.CASCADE, related_name = 'products')
+    product_category = models.ForeignKey(Category,on_delete=models.SET_NULL,null=True)
     product_description = models.TextField()
     is_active = models.BooleanField(default=True)
+    kill_switch = models.BooleanField(default=False)
     
 
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.product_name)
         super(Product, self).save(*args , **kwargs)
+
+        if self.kill_switch:
+            Product_varients.objects.filter(product = self).update(is_active = False)
+        
+        if self.kill_switch == False:
+            Product_varients.objects.filter(product = self).update(is_active = True)
 
     def __str__(self):
         return self.product_name 

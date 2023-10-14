@@ -11,8 +11,8 @@ from django.shortcuts import get_object_or_404
 # >>>>>>>>>>>>>>>>>>> models <<<<<<<<<<<<<<<<<<<<
 from account_management.models import Account
 from account_management.models import HomeMainSlide, HomeSubBanner
-from product.models import Brand, Product, RamVarient, ColorVarient , Product_varients , ProductImage
-
+from product.models import Brand, Product, RamVarient, ColorVarient , Product_varients , ProductImage 
+from categoryManagement.models import Category
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
 from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
@@ -208,10 +208,11 @@ def add_product(request):
             return redirect('admin_panel:product_listing')
     else:
         # Filter active brands only
+        active_category = Category.objects.filter(is_active = True)
         active_brands = Brand.objects.filter(is_active=True)
         form = ProductForm(initial={'brand': active_brands.first()})  # Preselect the first active brand
         form.fields['brand'].queryset = active_brands  # Set the queryset for the brand field
-
+        form.fields['product_category'].queryset = active_category
     return render(request, 'admin_templates/product/add_product.html', {'form': form})
 
 
@@ -242,11 +243,12 @@ def product_varients_edit(request, uid):
         active_product = Product.objects.filter(is_active = True)
         active_ram = RamVarient.objects.filter(is_active = True)
         active_color = ColorVarient.objects.filter(is_active = True)
+        
         form = Product_varientsForm(instance = product_varient)
         form.fields['product'].queryset = active_product
         form.fields['ram'].queryset = active_ram
         form.fields['color'].queryset = active_color
-
+        
     return render (request, 'admin_templates/product/edit_varients.html', {'form':form, 'product_varient':product_varient})
 
 
