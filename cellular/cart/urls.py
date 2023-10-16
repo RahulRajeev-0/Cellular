@@ -13,5 +13,10 @@ urlpatterns = [
     # ---check out--
     path('checkout/', views.checkout , name = 'checkout'), 
 
+    #--address --add
+    path('add_address/',views.add_address,name='add_address'),
+    #-- address - default
+    path('address_default/<int:id>/', views.address_default , name='address_default'),
+
     
 ]

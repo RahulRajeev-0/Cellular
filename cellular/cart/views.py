@@ -2,6 +2,11 @@ from django.shortcuts import render , redirect , HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.forms import ValidationError
+#-----------------forms----------------
+from account_management.forms import userAddressBookForm
+from account_management.models import userAddressBook
+
 # -------------------- models --------------------------
 from product.models import Product_varients
 from cart.models import Cart , CartItem
@@ -149,10 +154,25 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
 def checkout(request, total = 0 , quantity = 0 , cart_items = None):
     tax = 0
     grand_total = 0
-    
+    user_address_book_exists = userAddressBook.objects.filter(user=request.user).exists()
+    user_addresses = None
+    user_address_count = 0
+    if user_address_book_exists:
+        user_addresses = userAddressBook.objects.filter(user=request.user)
+        
+    if request.method == "POST":
+        form = userAddressBookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('cart:checkout')
+        else:
+            print(form.errors)
+    else:
+        form = userAddressBookForm
+
     try :
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active = True)
+        # cart = Cart.objects.get(user=ses)
+        cart_items = CartItem.objects.filter(user = request.user, is_active = True)
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
@@ -164,9 +184,61 @@ def checkout(request, total = 0 , quantity = 0 , cart_items = None):
     context = { 
         'total': total ,
         'quantity': quantity ,
-        'cart_items':cart_items ,
+        'cart_items': cart_items, 
         'tax': tax,
         'grand_total':grand_total,
-
+        'form':form,
+        'user_address_book_exists': user_address_book_exists,  # Include the user_address_book_exists variable in the context
+        'user_addresses':user_addresses,
     }
     return render (request, 'cart/checkout.html', context)
+
+
+
+# def add_address(request):
+#     if request.method == "POST":
+#         form = userAddressBookForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('cart:checkout')
+#         else:
+#             print(form.errors)
+#     else:
+#         form = userAddressBookForm
+#     return render(request, 'cart/add_address.html',{'form':form})
+
+def add_address(request):
+    if request.method == "POST":
+        form = userAddressBookForm(request.POST)
+        if form.is_valid():
+            user_address_book_exists = userAddressBook.objects.filter(user=request.user).exists()
+            if user_address_book_exists:
+                existing_addresses_count = userAddressBook.objects.filter(user=request.user).count()
+                if existing_addresses_count < 2:
+                    address_book = form.save(commit=False)
+                    address_book.user_id = request.user.id
+                    address_book.save() 
+                    return redirect('cart:checkout')
+                else:
+                    messages.warning(request,"Only 2 Address can be added")
+                    return redirect('cart:checkout')
+            else:
+                address_book = form.save(commit=False)
+                address_book.user_id = request.user.id
+                address_book.save() 
+                return redirect('cart:checkout')
+        else:
+            print(form.errors)
+    else:
+        
+        form = userAddressBookForm()  # Instantiate the form
+
+    return render(request, 'cart/add_address.html', {'form': form})
+
+
+
+def address_default(request, id):
+    address = userAddressBook.objects.get(id=id)
+    address.is_default = not address.is_default  # Toggle the is_default field
+    address.save()  # Save the updated object to the database
+    return redirect('cart:checkout')

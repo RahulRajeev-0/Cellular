@@ -57,13 +57,13 @@
                         <td class="align-middle">
                             <div class="input-group quantity mx-auto" style="width: 100px;">
                                 <div class="input-group-btn">
-                                    <a class="btn btn-sm btn-warning btn-minus" href="{% url "cart:remove_cart" product_uid=cart_item.product.uid %}" >
+                                    <a class="btn btn-sm btn-white btn-minus" href="{% url "cart:remove_cart" product_uid=cart_item.product.uid %}" >
                                     <i class="fa fa-minus"></i>
                                     </a>
                                 </div>
                                 <input type="text" class="form-control form-control-sm bg-secondary text-center" value="{{cart_item.quantity}}">
                                 <div class="input-group-btn">
-                                    <a class="btn btn-sm btn-warning btn-plus" href="{% url "cart:add_cart" product_uid=cart_item.product.uid %}" >
+                                    <a class="btn btn-sm btn-white btn-plus" href="{% url "cart:add_cart" product_uid=cart_item.product.uid %}" >
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div>
@@ -78,14 +78,7 @@
         </div>
        
         <div class="col-lg-4">
-            <form class="mb-5" action="">
-                <div class="input-group">
-                    <input type="text" class="form-control p-4" placeholder="Coupon Code">
-                    <div class="input-group-append">
-                        <button class="btn btn-warning">Apply Coupon</button>
-                    </div>
-                </div>
-            </form>
+           
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
