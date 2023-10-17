@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.forms import ValidationError
+from django.shortcuts import get_object_or_404
+
+
 #-----------------forms----------------
 from account_management.forms import userAddressBookForm
 from account_management.models import userAddressBook
@@ -242,3 +245,17 @@ def address_default(request, id):
     address.is_default = not address.is_default  # Toggle the is_default field
     address.save()  # Save the updated object to the database
     return redirect('cart:checkout')
+
+
+def edit_address(request,id):
+    user_address_book = get_object_or_404(userAddressBook, id=id)
+    if request.method == "POST":
+        form = userAddressBookForm(request.POST, instance = user_address_book)
+        if form.is_valid():
+            form.save()
+            return redirect('cart:checkout')
+        else:
+            print(form.error)
+    else:
+        form = userAddressBookForm(instance=user_address_book)
+    return render(request, 'cart/edit_address.html',{'form':form})

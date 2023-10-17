@@ -46,11 +46,11 @@
                                     {{ user_address.city }}, {{ user_address.state }}, {{ user_address.pincode }}
                                 </p>
                                 {% if user_address.is_default %}
-                                    <a href="" class="btn btn-warning card-link">Edit</a>
+                                    <a href="{% url "cart:edit_address" id=user_address.id %}" class="btn btn-warning card-link">Edit</a>
                                     <a href="" class="btn btn-white card-link">✅</a>
                                 {% else %} 
                                     <a href="{% url "cart:address_default" id=user_address.id %}" class="btn btn-outline-info card-link">  Default</a>
-                                    <a href="" class="btn btn-warning card-link">Edit</a>
+                                    <a href="{% url "cart:edit_address" id=user_address.id %}" class="btn btn-warning card-link">Edit</a>
                                 {% endif %}
                         </div>
                     </div>

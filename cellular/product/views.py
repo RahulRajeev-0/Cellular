@@ -1,4 +1,4 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse , redirect
 from django.shortcuts import get_object_or_404
 from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
 from cart.models import Cart,CartItem
@@ -41,3 +41,15 @@ def product_details(request, vuid , puid):
         'in_cart':in_cart ,
             })
     
+
+
+def shop_sreach(request):
+    if request.method == "POST":
+        product = request.POST.get('sreach_product','')
+    
+        if product:
+            products = Product.objects.all()
+            product_variants = Product_varients.objects.filter(product_heading__icontains=product)
+            context = {'product_variants':product_variants}
+            return render(request, 'products/shoping.html', context)
+    return redirect ('product:shoping_page')

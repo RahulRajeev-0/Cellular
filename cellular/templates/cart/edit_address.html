@@ -1,0 +1,91 @@
+{% extends "account_management/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Edit Address</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href="" class="text-warning">Home</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Edit Address</p>
+        </div>
+    </div>
+</div>
+{% if form.errors %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger">
+                    <strong>Form errors:</strong>
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                        <li>{{ field }}: {{ errors }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+<div class="container-fluid pt-5">
+    
+    <div class="row px-xl-5">
+        
+        <div class="col-lg-8">
+           
+            <form action="" method='POST'>
+                {% csrf_token %}
+            <div class="mb-4">
+                <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
+                <div class="row">
+                
+                    <div class="col-md-6 form-group">
+                        <label>Name</label>
+                        {{form.name}}
+                    </div>
+                    
+                    <div class="col-md-6 form-group">
+                        <label>Mobile No</label>
+                        {{form.phone}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Address Line 1</label>
+                        {{form.address_line_1}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Address Line 2</label>
+                        {{form.address_line_2}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Country</label>
+                        
+                        {{form.country}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>City</label>
+                        {{form.city}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>State</label>
+                        {{form.state}}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>PIN Code</label>
+                        {{form.pincode}}
+                    </div>
+                    
+                    <div class="col-md-12 form-group">
+                        <button type="submit" class="btn btn-warning card-link">Edit Address</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+       
+    
+        
+    </div>
+</div>
+
+{% endblock content %}
