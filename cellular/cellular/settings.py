@@ -151,3 +151,12 @@ EMAIL_PORT='587'
 EMAIL_HOST_USER='ravanan0908@gmail.com'
 EMAIL_HOST_PASSWORD='qsyz duay caoi wuir'
 EMAIL_USE_TLS=True
+
+
+
+##################################
+
+# ---------- RAZORPAY -------------
+KEY = 'rzp_test_p2yR17LcMZzs05'
+SECRET = 'KtwqhbWF7ezocTFOy3c2e2M6'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"

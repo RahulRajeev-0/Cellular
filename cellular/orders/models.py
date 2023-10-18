@@ -22,6 +22,10 @@ class Payment(models.Model):
     payment_id = models.CharField(max_length = 100)
     payment_order_id = models.CharField(max_length=100, null=True, blank=True)
     payment_method = models.CharField(choices=PAYMENTT_METHOD, max_length=100)
+
+    rayzor_pay_order_id = models.CharField(max_length=100, null=True , blank=True)
+    rayzor_pay_payment_id = models.CharField(max_length=100, null=True , blank=True)
+    rayzor_pay_payment_signature = models.CharField(max_length=100, null=True , blank=True)
     amount_paid = models.CharField(max_length = 100)
     payment_status = models.CharField(choices=PAYMENT_STATUS_CHOICE, max_length=100,blank=True,default='PENDING')
     created_at = models.DateTimeField(auto_now_add = True)

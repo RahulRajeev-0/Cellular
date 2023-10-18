@@ -1,0 +1,286 @@
+
+{% extends "account_management/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+
+
+{% for message in messages  %}
+                      <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      {% endfor %}
+{% if order.payment.payment_method == 'COD' %}
+<div class="container-fluid pt-5">
+   
+    <div class="row px-xl-5">
+        {% comment %} <h5 class="text-center">Review your order and make payment</h5> {% endcomment %}
+        <div class="col-lg-8 table-responsive mb-5">
+            <div class="card">
+                <div class="card-header text-dark font-weight-bold">
+                  Billing Address
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title text-dark">{{order.shipping_address.name}} </h5>
+                  <p class="card-text text-dark"> {{order.shipping_address.address_line_1}} ,{{order.shipping_address.address_line_2}}, {{order.shipping_address.country}} , {{order.shipping_address.state}} , {{order.shipping_address.city}} ,{{order.shipping_address.pincode}} , <br> {{order.shipping_address.phone}}</p>
+                  
+                </div>
+              </div>
+              <BR>
+              <div class="card">
+                <div class="card-header text-dark font-weight-bold">
+                  Payment Method
+                </div>
+                <div class="card-body">
+                  {% comment %} <h5 class="card-title text-dark">{{order.payment.payment_method}}</h5> {% endcomment %}
+                  <p class="card-text text-dark font-weight-light">{{order.payment.payment_method}}</p>
+                </div>
+              </div>
+              <BR>
+              <div class="card">
+                <div class="card-header text-dark font-weight-bold">
+                  Review Products
+                </div>
+                <div class="card-body">
+                    {% for cart_item in cart_items %}
+                  <h5 class="card-title text-dark">{{cart_item.product.product_heading}}</h5>
+                  <p class="card-text text-dark font-weight-light">Price = {{cart_item.product.price}} , Quantity = {{cart_item.quantity}}</p>
+                  <br>
+                  {% endfor %}
+                </div>
+              </div>
+        </div>
+       
+        <div class="col-lg-4">
+           
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3 pt-1">
+                        <h6 class="font-weight-medium">Subtotal</h6>
+                        <h6 class="font-weight-medium">₹{{total}}</h6>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium">Tax</h6>
+                        <h6 class="font-weight-medium">₹{{tax}}</h6>
+                    </div>
+                    
+                    
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Total</h5>
+                        <h5 class="font-weight-bold">₹{{grand_total}}</h5>
+                    </div>
+                    <a href="{% url "orders:cash_on_delivery" %}" class="btn btn-block btn-warning my-3 py-3">Place order COD</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% else %}
+<div class="container-fluid pt-5">
+   
+  <div class="row px-xl-5">
+      {% comment %} <h5 class="text-center">Review your order and make payment</h5> {% endcomment %}
+      <div class="col-lg-8 table-responsive mb-5">
+          <div class="card">
+              <div class="card-header text-dark font-weight-bold">
+                Billing Address
+              </div>
+              <div class="card-body">
+                <h5 class="card-title text-dark">{{order.shipping_address.name}} </h5>
+                <p class="card-text text-dark"> {{order.shipping_address.address_line_1}} ,{{order.shipping_address.address_line_2}}, {{order.shipping_address.country}} , {{order.shipping_address.state}} , {{order.shipping_address.city}} ,{{order.shipping_address.pincode}} , <br> {{order.shipping_address.phone}}</p>
+                
+              </div>
+            </div>
+            <BR>
+            <div class="card">
+              <div class="card-header text-dark font-weight-bold">
+                Payment Method
+              </div>
+              <div class="card-body">
+                {% comment %} <h5 class="card-title text-dark">{{order.payment.payment_method}}</h5> {% endcomment %}
+                <p class="card-text text-dark font-weight-light">{{order.payment.payment_method}}</p>
+              </div>
+            </div>
+            <BR>
+            <div class="card">
+              <div class="card-header text-dark font-weight-bold">
+                Review Products
+              </div>
+              <div class="card-body">
+                  {% for cart_item in cart_items %}
+                <h5 class="card-title text-dark">{{cart_item.product.product_heading}}</h5>
+                <p class="card-text text-dark font-weight-light">Price = {{cart_item.product.price}} , Quantity = {{cart_item.quantity}}</p>
+                <br>
+                {% endfor %}
+              </div>
+            </div>
+      </div>
+     
+      <div class="col-lg-4">
+         
+          <div class="card border-secondary mb-5">
+              <div class="card-header bg-secondary border-0">
+                  <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+              </div>
+              <div class="card-body">
+                  <div class="d-flex justify-content-between mb-3 pt-1">
+                      <h6 class="font-weight-medium">Subtotal</h6>
+                      <h6 class="font-weight-medium">₹{{total}}</h6>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                      <h6 class="font-weight-medium">Tax</h6>
+                      <h6 class="font-weight-medium">₹{{tax}}</h6>
+                  </div>
+                  
+                  
+              </div>
+              <div class="card-footer border-secondary bg-transparent">
+                  <div class="d-flex justify-content-between mt-2">
+                      <h5 class="font-weight-bold">Total</h5>
+                      <h5 class="font-weight-bold">₹{{grand_total}}</h5>
+                  </div>
+                  <botton id="rzp-button1" class="btn btn-block btn-warning my-3 py-3">Place Order Razorpay</botton>
+              </div>
+          </div>
+      </div>
+  </div>
+
+</div>
+{% comment %} <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  var options = {
+    "key": "rzp_test_p2yR17LcMZzs05", // Enter the Key ID generated from the Dashboard
+    "amount": "{{payment.amount}}",
+    "currency": "INR",
+    "description": "Purchases",
+    "image": "https://s3.amazonaws.com/rzp-mobile/images/rzp.jpg",
+    "order_id": "{{payment.id}}",
+    "prefill":
+    {
+      "email": "gaurav.kumar@example.com",
+      "contact": +919900000000,
+    },
+    config: {
+      display: {
+        blocks: {
+          utib: { //name for Axis block
+            name: "Pay using Axis Bank",
+            instruments: [
+              {
+                method: "card",
+                issuers: ["UTIB"]
+              },
+              {
+                method: "netbanking",
+                banks: ["UTIB"]
+              },
+            ]
+          },
+          other: { //  name for other block
+            name: "Other Payment modes",
+            instruments: [
+              {
+                method: "card",
+                issuers: ["ICIC"]
+              },
+              {
+                method: 'netbanking',
+              }
+            ]
+          }
+        },
+        hide: [
+          {
+          method: "upi"
+          }
+        ],
+        sequence: ["block.utib", "block.other"],
+        preferences: {
+          show_default_blocks: false // Should Checkout show its default blocks?
+        }
+      }
+    },
+    "handler": function (response) {
+      window.location.href
+    },
+    "modal": {
+      "ondismiss": function () {
+        if (confirm("Are you sure, you want to close the form?")) {
+          txt = "You pressed OK!";
+          console.log("Checkout form closed by the user");
+        } else {
+          txt = "You pressed Cancel!";
+          console.log("Complete the Payment")
+        }
+      }
+    }
+  };
+  var rzp1 = new Razorpay(options);
+  document.getElementById('rzp-button1').onclick = function (e) {
+    rzp1.open();
+    e.preventDefault();
+  }
+</script> {% endcomment %}
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+{% comment %} <script>
+    document.getElementById('cod-button1').onclick = function(e){
+        window.location.href = `{{success_url}}?order_id={{order.order_number}}&method=COD`
+    }
+
+</script> {% endcomment %}
+
+
+<script>
+    var options = {
+        "key": "rzp_test_p2yR17LcMZzs05", // Enter the Key ID generated from the Dashboard
+        "amount": "{{payment.amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "Cellular",
+        "description": "Purchases",
+        "image": "https://example.com/your_logo",
+        "order_id": "{{payment.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        "handler": function (response){
+            //alert(response.razorpay_payment_id);
+            //alert(response.razorpay_order_id);
+            //alert(response.razorpay_signature)
+            console.log(response)
+            window.location.href = `{{success_url}}?order_id={{order.order_number}}&method=RAZORPAY&payment_id=${response.razorpay_payment_id}&payment_order_id=${response.razorpay_order_id}&payment_sign=${response.razorpay_signature}`
+        },
+
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+            alert(response.error.code);
+            alert(response.error.description);
+            alert(response.error.source);
+            alert(response.error.step);
+            alert(response.error.reason);
+            alert(response.error.metadata.order_id);
+            alert(response.error.metadata.payment_id);
+    });
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+    </script>
+{% endif %}
+
+{% endblock content %}
