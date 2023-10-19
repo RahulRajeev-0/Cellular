@@ -143,10 +143,12 @@
                             Phone: {{order.user.phone_number}}
                         </p>
                     </div>
+                    {% if order.status != "Cancelled" %}
                     <div class="h-25 pt-4">
                         
                         <a href="{% url "admin_panel:admin_order_cancel" id=order.order_number %}" class="btn btn-warning">Cancel Order</a>
                     </div>
+                   {% endif %}
                 </div> <!-- col// -->
             </div>
         </div> <!-- card-body end// -->

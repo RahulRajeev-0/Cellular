@@ -249,6 +249,30 @@ def success (request):
 
 
 
+# -------------------------------  user order listing  -------------------------------
+
+def order_listing_user(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True)
+    
+    context = {
+        'orders':orders,
+    }
+    return render(request, 'orders/order_listing.html', context)
+
+
+def order_details_user(request,id):
+    order = Order.objects.get(order_number=id)
+    total = order.order_total
+    tax = order.tax
+    products = OrderProduct.objects.filter(order=order)
+    context = {
+        'order':order,
+        'total':total,
+        'tax':tax,
+        'products':products,
+
+    }
+    return render (request, 'orders/order_details.html',context)
    
 
     

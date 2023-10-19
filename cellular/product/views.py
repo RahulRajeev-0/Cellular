@@ -23,7 +23,7 @@ def shoping_page(request):
     return render(request, 'products/shoping.html', context)
 
 
-def product_details(request, vuid , puid):
+def product_details(request, vuid ):
     product_variant_instance = get_object_or_404(Product_varients, uid = vuid)
     ram_variants = RamVarient.objects.filter(product_varients = product_variant_instance)
     color_varients = ColorVarient.objects.filter(product_varients = product_variant_instance)

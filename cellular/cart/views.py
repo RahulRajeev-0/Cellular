@@ -178,7 +178,11 @@ def checkout(request, total = 0 , quantity = 0 , cart_items = None):
         cart_items = CartItem.objects.filter(user = request.user, is_active = True)
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
-            quantity += cart_item.quantity
+            if cart_item.product.stock_qty > 0:
+                quantity += cart_item.quantity
+            else:
+                messages.warning(request, f'{cart_item.product} is out of Stock ! ')
+                return redirect('cart:cart_page')
         tax = (2 * total)/100
         grand_total = total + tax
     except :

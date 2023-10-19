@@ -1,0 +1,166 @@
+
+{% extends "account_management/base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="container-fluid">
+    
+    <div class="container">
+      <!-- Title -->
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <h2 class="h5 mb-0"><a href="#" class="text-muted"></a> Order #{{order.order_number}}</h2>
+      </div>
+    
+      <!-- Main content -->
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Details -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="mb-3 d-flex justify-content-between">
+                <div>
+                  <span class="me-3">{{order.created_at}}</span>
+                  <br>
+                  <span class="me-3"># {{order.order_number}}</span>
+                  <br>
+                  <span class="me-3">{{order.payment.payment_method}}</span>
+                  <br>
+                  
+                  <span class="badge rounded-pill bg-warning">{{order.status}}</span>
+                  <br>
+                  <br>
+                  {% if order.status != "Cancelled" %}
+                  <a class='btn btn-dark'>Cancel Order</a>
+                  {% endif %}
+                  
+                  
+                  
+                  {% comment %} {% if order.order_status == 'Delivered' %}
+                  <span class="badge rounded-pill bg-success">{{order.order_status}}</span>
+                  {% endif %}
+                  {% if order.order_status == 'Cancelled' %}
+                  <span class="badge rounded-pill bg-danger">{{order.order_status}}</span>
+                  {% endif %}
+                  {% if order.order_status == 'Returned' %}
+                  <span class="badge rounded-pill bg-info">{{order.order_status}}</span>
+                  {% endif %} {% endcomment %}
+                </div>
+                <div class="d-flex">
+                  
+                  <a class="btn  p-0 me-3 d-none d-lg-block btn-icon-text"><i class="bi bi-download"></i> <span class="text">Invoice</span></a>
+                 
+                  <div class="dropdown">
+                    <button class="btn btn-link p-0 text-muted" type="button" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-pencil"></i> Edit</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-printer"></i> Print</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <table class="table table-borderless">
+                <tbody>
+                  {% for product in products %}
+                  <tr>
+                    <td>
+                      <div class="d-flex mb-2">
+                        <div class="flex-shrink-0">
+                          <img src="{{product.product.thambnail.url}}" alt="" width="55" class="img-fluid">
+                        </div>
+                        <div class="flex-lg-grow-1 ms-3">
+                          <h6 class="small mb-0"><a href="{% url 'product:product_details' vuid=product.product.uid  %}" class="text-reset">{{product.product.product_heading}}</a></h6>
+                          <span class="small">{% for attribute in product.product.attributes.all %} {{attribute}} {% endfor %}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{product.quantity}}</td>
+                    <td class="text-end">₹{{product.product_price}}</td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2">Subtotal</td>
+                    <td class="text-end">₹{{order.order_total}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">Tax</td>
+                    <td class="text-end">₹{{tax}}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">Discount</td>
+                    <td class="text-danger text-end">-₹0.00</td>
+                  </tr>
+                  <tr class="fw-bold">
+                    <td colspan="2">TOTAL</td>
+                    <td class="text-end">₹{{order.payment.amount_paid}}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              
+              {% if order.order_status == 'Accepted' %}
+              <button type="button" class="btn btn-danger"><a href="{% url "user_profile:order_cancel" id=order.id %}">Cancel</a></button>
+              {% endif %}
+              {% if order.order_status == 'Delivered' %}
+              <button type="button" class="btn btn-danger">Return</button>
+              {% endif %}
+            </div>
+          </div>
+          <!-- Payment -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <h3 class="h6">Payment Method</h3>
+                  <p>{{order.payment.payment_method}} <br>
+                  Total: {{total}} <!--<span class="badge bg-success rounded-pill">PAID</span></p> -->
+                </div>
+                <div class="col-lg-6">
+                  <h3 class="h6">Billing address</h3>
+                  <address>
+                    <strong>{{order.shipping_address.name}}</strong><br>
+                    {{order.shipping_address.address_line_1}},<br>
+                    {% if order.shipping_address.address_line_2 %}
+                    {{order.shipping_address.address_line_2}},<br>
+                    {% endif %}
+                    {{order.shipping_address.city}}, {{order.shipping_address.state}}, {{order.shipping_address.country}},<br>
+                    {{order.shipping_address.pincode}}. <br>
+                    <abbr title="Phone">P: </abbr>{{order.shipping_address.phone}}
+                  </address>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <!-- Customer Notes -->
+          
+          <div class="card mb-4">
+            <!-- Shipping information -->
+            <div class="card-body">
+              <h3 class="h6">Shipping Information</h3>
+              <strong>{{order.shipping_address.name}}</strong>
+              {% comment %} <span><a href="#" class="text-decoration-underline" target="_blank">FF1234567890</a> <i class="bi bi-box-arrow-up-right"></i> </span> {% endcomment %}
+              <hr>
+              <h3 class="h6">Address</h3>
+              <address>
+                <strong>{{order.shipping_address.address_line_1}}</strong><br>
+                {{order.shipping_address.city}}, {{order.shipping_address.state}}<br>
+                {{order.shipping_address.country}}, {{order.shipping_address.pincode}}<br>
+                <abbr title="Phone">P:</abbr> {{order.shipping_address.phone}}
+              </address>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+
+     
+
+{% endblock content %}
