@@ -129,6 +129,12 @@ def place_order(request):
 
 
 
+
+
+
+
+
+
 # ------------------------------------ function for cash on delivery ------------------------------------------
 
 def cash_on_delivery(request):
@@ -145,6 +151,7 @@ def cash_on_delivery(request):
     # order details
     order_object = Order.objects.get(order_number=payment_object.payment_order_id)
     order_object.order_status = "Accepted"
+    order_object.is_ordered = True
     order_object.save()
 
     for cart_item in cart_items:

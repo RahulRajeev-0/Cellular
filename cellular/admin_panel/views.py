@@ -13,6 +13,7 @@ from account_management.models import Account
 from account_management.models import HomeMainSlide, HomeSubBanner
 from product.models import Brand, Product, RamVarient, ColorVarient , Product_varients , ProductImage 
 from categoryManagement.models import Category
+from orders.models import Order , OrderProduct , Payment
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
 from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
@@ -449,6 +450,44 @@ def color_edit(request, uid):
         form = ColorForm(instance = color)
 
      return render(request, 'admin_templates/product/color_edit.html', {'form': form, 'color': color})
+
+
+
+                                        
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ====================================== ORDERS ================================================================================================================
+
+def order_listing(request):
+    orders = Order.objects.filter(is_ordered = True)
+    print(orders)
+    context = {
+        'orders':orders
+    }
+    return render(request, 'admin_templates/orders/order_listing.html', context)
+
+def order_details(request,id):
+    order = Order.objects.get(order_number=id)
+    total = order.order_total
+    tax = order.tax
+    products = OrderProduct.objects.filter(order=order)
+
+    context = {
+        'order':order,
+        'total':total,
+        'tax':tax,
+        'products':products,
+    }
+    return render(request, "admin_templates/orders/order_details.html", context )
+
+def admin_order_cancel(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Cancelled"
+    order.save()
+    return redirect('admin_panel:order_listing')
+
+
+
+
 
 
 

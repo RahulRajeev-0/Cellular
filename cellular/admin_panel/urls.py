@@ -51,6 +51,13 @@ urlpatterns = [
     path('home_main_slider/', views.home_main_slider, name='home_main_slider'),
     path('delete_slide/<int:slide_id>', views.delete_slide, name='delete_slide'),
     path('Home_sub_banner/', views.Home_sub_banner, name='Home_sub_banner'),
-    path('delete_sub_banner/<int:id>', views.delete_sub_banner, name='delete_sub_banner')
+    path('delete_sub_banner/<int:id>', views.delete_sub_banner, name='delete_sub_banner'),
    
+
+    # ------------------------------ orders ----------------------------------------------------
+
+    path('order_listing/', views.order_listing, name="order_listing"),
+    path('order_details/<id>/', views.order_details , name='order_details'),\
+    path('admin_order_cancel/<id>/', views.admin_order_cancel, name='admin_order_cancel'),
+
 ]
