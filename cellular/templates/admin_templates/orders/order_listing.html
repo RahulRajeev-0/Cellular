@@ -54,7 +54,7 @@
                                             <td>{{forloop.counter}}</td>
                                             <td><b>{{order.user}}</b></td>
                                             <td>{{order.order_total}}</td>
-                                            <td><span class="badge rounded-pill bg-{%if order.status == "Cancelled"%}warning{% else %}success{% endif %}">{{order.status}}</span></td>
+                                            <td><span class="badge rounded-pill bg-{%if order.status == "Cancelled"%}danger{% elif order.status == "New"%}info{% elif order.status == "Accepted"%}warning{% else %}success{% endif %}">{{order.status}}</span></td>
                                             <td>{{order.updated_at}}</td>
                                             <td class="text-end">
                                                 <a href="{% url "admin_panel:order_details" id=order.order_number %}" class="btn  btn-md  font-sm">Detail</a>

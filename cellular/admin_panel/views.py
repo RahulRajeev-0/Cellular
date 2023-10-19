@@ -479,6 +479,7 @@ def order_details(request,id):
     }
     return render(request, "admin_templates/orders/order_details.html", context )
 
+
 def admin_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancelled"
@@ -486,8 +487,17 @@ def admin_order_cancel(request,id):
     return redirect('admin_panel:order_listing')
 
 
+def admin_order_accept(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Accepted"
+    order.save()
+    return redirect('admin_panel:order_listing')
 
-
+def admin_order_complete(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Completed"
+    order.save()
+    return redirect('admin_panel:order_listing')
 
 
 
