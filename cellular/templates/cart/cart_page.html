@@ -70,7 +70,7 @@
                             </div>
                         </td>
                         <td class="align-middle">{{ cart_item.sub_total }}</td>
-                        <td class="align-middle"><a href="{% url "cart:remove_cart_item" product_uid=cart_item.product.uid %}" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a></td>
+                        <td class="align-middle"><a href="{% url "cart:remove_cart_item" product_uid=cart_item.product.uid %}" class="btn btn-sm btn-white"><i class="fa fa-times"></i></a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -100,7 +100,7 @@
                         <h5 class="font-weight-bold">Total</h5>
                         <h5 class="font-weight-bold">₹{{grand_total}}</h5>
                     </div>
-                    <a href="{% url "cart:checkout" %}" class="btn btn-block btn-warning my-3 py-3">Proceed To Checkout</a>
+                    <a href="{% url "cart:checkout" %}" class="btn btn-block btn-dark my-3 py-3">Proceed To Checkout</a>
                 </div>
             </div>
         </div>

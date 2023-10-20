@@ -48,6 +48,7 @@
                             <th scope="col">Email</th>
                             <th scope="col">Phone</th>
                             <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Action</th>
                             {% comment %} <th scope="col">Date</th> {% endcomment %}
                             {% comment %} <th scope="col" class="text-end"> Action </th> {% endcomment %}
                         </tr>
@@ -61,7 +62,7 @@
                             <td> {{user.email}} </td>
                             <td> {{user.phone_number}} </td>
                             <td><span class="badge  bg-{% if user.is_active %}success {% else %}danger{% endif %} alert-success"> {{user.is_active}} </span></td>
-                            <td>03.12.2020</td>
+                            
                             <td class="text-end">
                                 {% if user.is_active%}
                                 <a href="{% url "admin_panel:user_block_unblock" id=user.id %}" class="btn btn-md bg-danger font-sm">Block</a>
