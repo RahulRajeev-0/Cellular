@@ -148,24 +148,35 @@
         </div>
         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
             <h6 class="text-truncate mb-3">{{ variant.product.product_name }}</h6>
-            <p class="text-truncate mb-3">{{ variant.product_heading }}</p>
+            <p class="text-truncate mb-3">Ram: {{ variant.ram }}<br>color: {{ variant.color }}</p>
+           
             <div class="d-flex justify-content-center">
                 <h6>{{ variant.price }}</h6><h6 class="text-muted ml-2"><del></del></h6>
             </div>
         </div>
         <div class="card-footer d-flex justify-content-between bg-light border">
             <!-- Add links or buttons for variant actions (view details, add to cart, etc.) -->
+            <a href="{% url 'cart:add_to_wish_list' id=variant.uid %}" class="btn btn-sm text-dark p-0">
+              <i class="fa-regular fa-heart fa-lg" style="color: #000000;"></i>
+           </a>
             <a href="{% url 'product:product_details' vuid=variant.uid  %}" class="btn btn-sm text-dark p-0">
-                <i class="fas fa-eye text-warning mr-1"></i>View Detail
+              <span class="material-symbols-outlined text-dark">
+                visibility
+                </span>
             </a>
+            
             
             {% if variant.stock_qty  %}
             <a href="{% url "cart:add_cart" product_uid=variant.uid %}" class="btn btn-sm text-dark p-0">
-                <i class="fas fa-shopping-cart text-success mr-1"></i>Add To Cart
+              <span class="material-symbols-outlined text-success">
+                add_shopping_cart
+                </span>
             </a>
             {% else %}
             <a href="" class="btn btn-sm text-dark p-0 disabled">
-                <i class="fas fa-times mr-1 text-danger"></i>Out of Stock
+              <span class="material-symbols-outlined text-danger">
+                remove_shopping_cart
+                </span>
             </a>
             {% endif %}
         </div>

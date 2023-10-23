@@ -1,7 +1,7 @@
 from django.shortcuts import render,HttpResponse , redirect
 from django.shortcuts import get_object_or_404
 from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
-from cart.models import Cart,CartItem
+from cart.models import Cart,CartItem , WishList
 from cart.views import _cart_id
 from django.core.paginator import EmptyPage , PageNotAnInteger , Paginator
 
@@ -14,7 +14,6 @@ def shoping_page(request):
     paginator = Paginator(product_variants , 6)
     page = request.GET.get('page')
     paged_products = paginator.get_page(page)
-    
     context = {
         'products': products, 
         'product_variants': paged_products,

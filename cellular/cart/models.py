@@ -27,3 +27,17 @@ class CartItem(models.Model):
 
     def __str__(self) -> str:
         return self.product.product.product_name
+
+
+
+class WishList(models.Model):
+    user = models.ForeignKey(Account, on_delete = models.CASCADE, null = True)
+    product = models.ForeignKey(Product_varients, on_delete = models.CASCADE , null= True)
+    create_at = models.DateField(auto_now_add = True)
+
+    def __str__(self):
+        return self.user.user_name
+    
+
+    
+    

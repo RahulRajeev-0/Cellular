@@ -1,4 +1,5 @@
-from django.shortcuts import render , redirect , HttpResponse
+from django.shortcuts import render , redirect , HttpResponse 
+from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -12,7 +13,7 @@ from account_management.models import userAddressBook
 
 # -------------------- models --------------------------
 from product.models import Product_varients
-from cart.models import Cart , CartItem
+from cart.models import Cart , CartItem , WishList
 
 # Create your views here.
 
@@ -27,13 +28,23 @@ def _cart_id(request):
 
 
 
+
+
+
+
+
+
+
+
+
 # add to cart function that adds the products to the cart 
 def add_cart(request, product_uid):
     current_user = request.user
     if current_user.is_authenticated :
         product = Product_varients.objects.get(uid=product_uid) # get product 
-        
-        is_cart_item_exits = CartItem.objects.filter(product = product , user = current_user).exists()
+        # product_id = request.POST.get('product_id')
+        # product_check = Product_varients.objects.get(uid=product_id)
+        # is_cart_item_exits = CartItem.objects.filter(product = product , user = current_user).exists()
         try :
             cart_item = CartItem.objects.get(product = product , user = current_user)
             if cart_item.product.stock_qty > cart_item.quantity:   # checking the quantiy in stock and cart quantity 
@@ -85,6 +96,37 @@ def add_cart(request, product_uid):
         return redirect ('cart:cart_page')
 
 
+# function to add the cart items using adjax 
+
+def add_to_cart_ajax(request):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            prod_id = request.POST.get('product_id')
+            product_check = Product_varients.objects.get(uid=prod_id)
+            if (product_check):
+                if (CartItem.objects.filter(user=request.user , product=product_check)):
+                    return JsonResponse({'status':"product already in cart "})
+                else:
+                    prod_qty = int(request.POST.get('product_qty'))
+
+                    if product_check.stock_qty >= prod_qty:
+                        CartItem.objects.create(user=request.user , product= product_check , quantity=prod_qty)
+                        return JsonResponse({"status":"Product add sessuccfully "})
+                    else:
+                        return JsonResponse({'status':"Only "+str(product_check.stock_qty)+" this number of quantity available" })
+            else:
+                return JsonResponse({"status":'NO such product found '})
+            
+        else:
+            return JsonResponse({'status':"Login to continue ! "})
+
+
+
+
+
+
+
+
 
 def remove_cart(request , product_uid):
     
@@ -108,6 +150,11 @@ def remove_cart(request , product_uid):
 
 
 
+
+
+
+
+
 def remove_cart_item(request, product_uid):
     product = get_object_or_404(Product_varients, uid = product_uid)
     if request.user.is_authenticated:
@@ -118,6 +165,15 @@ def remove_cart_item(request, product_uid):
         cart_item = CartItem.objects.get(product = product , cart = cart)
         cart_item.delete()
     return redirect ('cart:cart_page')
+
+
+
+
+
+
+
+
+
 
 
 
@@ -150,6 +206,15 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
 
     }
     return render(request, 'cart/cart_page.html', context)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -214,6 +279,10 @@ def checkout(request, total = 0 , quantity = 0 , cart_items = None):
 #         form = userAddressBookForm
 #     return render(request, 'cart/add_address.html',{'form':form})
 
+
+
+
+@login_required(login_url='account_management:user_login')
 def add_address(request):
     if request.method == "POST":
         form = userAddressBookForm(request.POST)
@@ -244,6 +313,10 @@ def add_address(request):
 
 
 
+
+
+
+@login_required(login_url='account_management:user_login')
 def address_default(request, id):
     address = userAddressBook.objects.get(id=id)
     address.is_default = not address.is_default  # Toggle the is_default field
@@ -251,6 +324,9 @@ def address_default(request, id):
     return redirect('cart:checkout')
 
 
+
+
+@login_required(login_url='account_management:user_login')
 def edit_address(request,id):
     user_address_book = get_object_or_404(userAddressBook, id=id)
     if request.method == "POST":
@@ -263,3 +339,39 @@ def edit_address(request,id):
     else:
         form = userAddressBookForm(instance=user_address_book)
     return render(request, 'cart/edit_address.html',{'form':form})
+
+
+
+
+
+
+def wish_list(request):
+    items = WishList.objects.filter(user=request.user)
+    context ={
+        'items':items
+    }
+
+    return render(request,'cart/wishlist.html', context)
+
+
+
+
+def add_to_wish_list(request, id):
+    product = Product_varients.objects.get(uid=id)
+    wish_list_exist = WishList.objects.filter(user=request.user, product=product).exists()
+    if wish_list_exist:
+        messages.info(request,"Already in the wishlist")
+        return redirect('cart:wish_list')
+    else:
+        wishlist_item = WishList.objects.create(user=request.user, product=product)
+        wishlist_item.save()
+        return redirect('cart:wish_list')
+
+
+
+def remove_item_wish_list(request, id):
+    product = Product_varients.objects.get(uid = id)
+    wish_list = WishList.objects.get(user=request.user, product=product)
+    wish_list.delete()
+    return redirect('cart:wish_list')
+

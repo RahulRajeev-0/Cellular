@@ -54,16 +54,17 @@
                     <tr>
                         <td class="align-middle"><img src="{{ cart_item.product.thambnail.url }}" alt="" style="width: 50px;">{{ cart_item.product.product }}</td>
                         <td class="align-middle">{{cart_item.product.price}}</td>
-                        <td class="align-middle">
+                        <td class="align-middle product_data">
+                            <input type='hidden' value="{{cart_item.product.uid}}" class="prod_id">{% csrf_token %}
                             <div class="input-group quantity mx-auto" style="width: 100px;">
                                 <div class="input-group-btn">
                                     <a class="btn btn-sm btn-white btn-minus" href="{% url "cart:remove_cart" product_uid=cart_item.product.uid %}" >
                                     <i class="fa fa-minus"></i>
                                     </a>
                                 </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="{{cart_item.quantity}}">
+                                <input type="text" class="form-control form-control-sm bg-secondary text-center qty-input" value="{{cart_item.quantity}}">
                                 <div class="input-group-btn">
-                                    <a class="btn btn-sm btn-white btn-plus" href="{% url "cart:add_cart" product_uid=cart_item.product.uid %}" >
+                                    <a class="btn btn-sm btn-white btn-plus addToCartBtn" href="{% url "cart:add_cart" product_uid=cart_item.product.uid %}" >
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div>
