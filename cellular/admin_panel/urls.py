@@ -63,4 +63,10 @@ urlpatterns = [
     path('admin_order_complete/<id>/', views.admin_order_complete, name='admin_order_complete'),
     path('admin_order_returned/<id>/', views.admin_order_returned, name='admin_order_returned'),
 
+
+
+    # ----------------------------------- coupons --------------------------------------------
+    path('coupons_listing/', views.coupons_listing , name="coupons_listing"),
+    path('coupons_edit/<id>', views.coupons_edit , name="coupons_edit"),
+
 ]

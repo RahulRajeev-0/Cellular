@@ -14,10 +14,13 @@ from account_management.models import HomeMainSlide, HomeSubBanner
 from product.models import Brand, Product, RamVarient, ColorVarient , Product_varients , ProductImage 
 from categoryManagement.models import Category
 from orders.models import Order , OrderProduct , Payment
+from orders.models import Coupon 
+
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
 from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
 
+from orders.forms import CouponForm
 
 
 
@@ -505,6 +508,39 @@ def admin_order_returned(request,id):
     order.save()
     return redirect('admin_panel:order_listing')
 
+
+
+
+
+#----------------------------- coupons -----------------------------------------
+
+
+
+# ---------------------- coupon page --------------------
+def coupons_listing(request):
+    if request.method == 'POST':
+        form = CouponForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("admin_panel:coupons_listing")
+    else:
+        form = CouponForm
+    list = Coupon.objects.all()
+    return render(request, 'admin_templates/coupons/coupon.html', {'form':form, "list":list})
+
+
+def coupons_edit(request,id):
+    coupon = get_object_or_404(Coupon,id=id)
+    if request.method == "POST":
+        form = CouponForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            return redirect("admin_panel:coupons_listing")
+        else:
+            print(form.errors)
+    else:
+        form = CouponForm(instance=coupon)
+    return render(request, "admin_templates/coupons/coupons_edit.html", {'form':form})
 
 
 # --------------- fucntion for ad logout ---------------------------

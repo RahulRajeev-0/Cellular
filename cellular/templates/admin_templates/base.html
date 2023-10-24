@@ -69,6 +69,7 @@
                     
                 </div>
             </li>
+            
             <li class="menu-item ">
                 <a class="menu-link" href={% url "admin_panel:user_listing" %} > <i class="icon material-icons md-person"></i>
                     <span class="text">User Account</span>
@@ -83,6 +84,16 @@
                 <a class="menu-link" href={% url "admin_panel:order_listing" %}> <i class="icon material-icons md-shopping_cart"></i>
                     <span class="text">Orders</span>
                 </a>
+            </li>
+            <li class="menu-item has-submenu">
+                <a class="menu-link" href="page-form-product-1.html"> <i class="icon material-icons md-local_offer"></i>
+                    <span class="text">Offers & Coupons</span>
+                </a>
+                <div class="submenu">
+                    <a href="{% url "admin_panel:coupons_listing" %}">Coupon Management</a>
+                    <a href="">Category Offers</a>
+                    
+                </div>
             </li>
             <li class="menu-item">
                 <a class="menu-link" href={% url "admin_panel:brand_list"  %}><i class="icon material-icons md-store"></i></i>

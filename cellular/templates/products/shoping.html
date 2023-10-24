@@ -158,13 +158,14 @@
         <div class="card-footer d-flex justify-content-between bg-light border">
             <!-- Add links or buttons for variant actions (view details, add to cart, etc.) -->
   
-            {% if variant.uid not in wishlist_items.all %}
+            {% if variant.uid  in wishlist_items.all %}
             <a href="{% url 'cart:add_to_wish_list' id=variant.uid %}" class="btn btn-sm text-dark p-0">
-              <i class="fa-regular fa-heart fa-lg" style="color: #000000;"></i>
+              
+              <i class="fa-solid fa-heart fa-lg" style="color: #ff0000;"></i>
            </a>
            {% else %}
            <a href="{% url 'cart:add_to_wish_list' id=variant.uid %}" class="btn btn-sm text-dark p-0">
-            <i class="fa-solid fa-heart fa-lg" style="color: #ff0000;"></i>
+            <i class="fa-regular fa-heart fa-lg" style="color: #000000;"></i>
          </a>
            {% endif %}
           

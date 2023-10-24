@@ -1,0 +1,48 @@
+{% extends "admin_templates/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<center>
+    <h1>Edit Coupons </h1>
+    <p> Form to Edit Coupons </p>
+    <br><br>
+    
+        <section class="content-main">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Coupon</h4>
+                            <p>please note date formate : yyyy-mm-dd</p>
+                        </div>
+                        <div class="card-body">
+                            <form action="" method="POST" enctype="multipart/form-data">
+
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type='submit' value='save' class='btn btn-success'>
+                            </form>
+                            
+                        </div>
+                    </div> <!-- card end// -->
+                  
+                </div>
+
+              
+            </div>
+        </section>
+       
+
+       
+    
+
+ 
+
+</center>
+
+
+
+
+{% endblock content %}

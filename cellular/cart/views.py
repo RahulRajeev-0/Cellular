@@ -344,7 +344,7 @@ def edit_address(request,id):
 
 
 
-
+@login_required(login_url='account_management:user_login')
 def wish_list(request):
     items = WishList.objects.filter(user=request.user)
     context ={
