@@ -41,7 +41,11 @@ class Order(models.Model):
     ('New' , 'New'),
     ('Accepted', 'Accepted'),
     ('Completed', 'Completed'),
+    ('Cancel', 'Cancel' ),
     ('Cancelled', 'Cancelled' ),
+    ('Cancelled by Admin', 'Cancelled by Admin' ),
+    ('Return', 'Return' ),
+    ('Returned', 'Returned' ),
     )
 
     user = models.ForeignKey(Account , on_delete = models.SET_NULL , null = True)
@@ -50,7 +54,7 @@ class Order(models.Model):
     shipping_address = models.ForeignKey(userAddressBook, on_delete=models.SET_NULL, null=True)
     order_total = models.FloatField()
     tax = models.FloatField()
-    status = models.CharField(max_length = 10 , choices = STATUS, default = 'New')
+    status = models.CharField(max_length = 30 , choices = STATUS, default = 'New')
     ip = models.CharField(blank = True, max_length = 20)
     is_ordered = models.BooleanField(default = False)
     created_at = models.DateTimeField(auto_now_add = True)

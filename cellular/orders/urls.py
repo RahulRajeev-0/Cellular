@@ -11,5 +11,7 @@ urlpatterns = [
     path('success/', views.success , name='success'),
     path('order_listing_user/', views.order_listing_user , name='order_listing_user'),
     path('order_details_user/<id>/', views.order_details_user , name='order_details_user'),
+    path('user_order_cancel/<id>/', views.user_order_cancel, name="user_order_cancel"),
+    path('user_order_return/<id>/', views.user_order_return, name="user_order_return"),
 
 ]

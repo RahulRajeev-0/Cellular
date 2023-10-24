@@ -275,4 +275,18 @@ def order_details_user(request,id):
     return render (request, 'orders/order_details.html',context)
    
 
-    
+
+
+
+# order cancel by user 
+def user_order_cancel(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Cancel"
+    order.save()
+    return redirect("orders:order_details_user")
+
+def user_order_return(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Return"
+    order.save()
+    return redirect("orders:order_listing_user")

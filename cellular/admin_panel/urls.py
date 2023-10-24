@@ -61,6 +61,6 @@ urlpatterns = [
     path('admin_order_cancel/<id>/', views.admin_order_cancel, name='admin_order_cancel'),
     path('admin_order_accept/<id>/', views.admin_order_accept, name='admin_order_accept'),
     path('admin_order_complete/<id>/', views.admin_order_complete, name='admin_order_complete'),
-
+    path('admin_order_returned/<id>/', views.admin_order_returned, name='admin_order_returned'),
 
 ]

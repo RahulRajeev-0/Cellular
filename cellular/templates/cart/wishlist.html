@@ -27,6 +27,16 @@
                       {% endfor %}
 
 <div class="container-fluid pt-5">
+    {% if not items %}
+    <center>
+    <h2> Your Shopping Wish list is Empty </h2>
+    <br>
+    <br>
+    <div class='text-center'>
+        <a href={% url "product:shoping_page"%} class="btn btn-warning">Countiue Shopping</a>
+    </div>
+    </center>
+    {% else %}
     <div class="row px-xl-5">
         <!-- Shop Sidebar Start -->
         
@@ -119,7 +129,7 @@
         <!-- Shop Product End -->
     </div>
 </div>
-
+{% endif %}
 
 
 

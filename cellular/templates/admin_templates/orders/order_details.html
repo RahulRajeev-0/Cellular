@@ -145,13 +145,15 @@
                     </div>
                     
                     <div class="h-25 pt-4">
-                        {% if order.status != "Completed" %}
+                        {% if order.status != "Completed" and order.status != "Return" and order.status != "Returned" %}
                         <a href="{% url "admin_panel:admin_order_cancel" id=order.order_number %}" class="btn btn-warning">Cancel Order</a>
                         {% endif %}
                         {% if order.status == "New" %}
                         <a href="{% url "admin_panel:admin_order_accept" id=order.order_number %}" class="btn btn-warning">Accept Order</a>
-                        {% else %}
+                         {% elif order.status != "Completed" and order.status != "Return" and order.status != "Returned" and order.status != "Cancel"%}
                         <a href="{% url "admin_panel:admin_order_complete" id=order.order_number %}" class="btn btn-warning">Complete</a>
+                        {% elif order.status == "Return" %}
+                        <a href="{% url "admin_panel:admin_order_returned" id=order.order_number %}" class="btn btn-warning">Return Accept</a>
                         {% endif %}
                         
                     </div>

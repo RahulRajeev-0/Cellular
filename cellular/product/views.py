@@ -13,10 +13,16 @@ def shoping_page(request):
     product_variants = Product_varients.objects.all().filter(is_active = True).order_by('uid')  # Get all product variants
     paginator = Paginator(product_variants , 6)
     page = request.GET.get('page')
+    wishlist_items = WishList.objects.filter(user=request.user).exists()
+    if not wishlist_items:
+        wishlist_items = 0
+    else:
+        wishlist_items = WishList.objects.filter(user=request.user).values_list('product__uid', flat=True)
     paged_products = paginator.get_page(page)
     context = {
         'products': products, 
         'product_variants': paged_products,
+        'wishlist_items': wishlist_items,
         }
     
     return render(request, 'products/shoping.html', context)

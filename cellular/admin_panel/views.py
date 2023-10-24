@@ -482,7 +482,7 @@ def order_details(request,id):
 
 def admin_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
-    order.status = "Cancelled"
+    order.status = "Cancelled by Admin"
     order.save()
     return redirect('admin_panel:order_listing')
 
@@ -499,6 +499,11 @@ def admin_order_complete(request,id):
     order.save()
     return redirect('admin_panel:order_listing')
 
+def admin_order_returned(request,id):
+    order = Order.objects.get(order_number=id)
+    order.status = "Returned"
+    order.save()
+    return redirect('admin_panel:order_listing')
 
 
 
