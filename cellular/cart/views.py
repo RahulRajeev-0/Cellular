@@ -14,6 +14,7 @@ from account_management.models import userAddressBook
 # -------------------- models --------------------------
 from product.models import Product_varients
 from cart.models import Cart , CartItem , WishList
+from orders.models import Coupon
 
 # Create your views here.
 
@@ -96,29 +97,102 @@ def add_cart(request, product_uid):
         return redirect ('cart:cart_page')
 
 
+
+
+
+def newcart_update(request):
+    new_quantity = 0
+    total = 0
+    tax = 0
+    grand_total = 0
+    quantity=0
+    counter=0
+    if request.method == "POST":
+        prod_id = request.POST.get("product_id")
+        cart_item_id = int(request.POST.get('cart_id'))
+        qty = int(request.POST.get('qty'))
+        counter = int(request.POST.get('counter'))
+        product = get_object_or_404(Product_varients, uid=prod_id)
+        
+        if request.user.is_authenticated:
+            try:
+                cart_item = CartItem.objects.get(product=product)
+                cart_items = CartItem.objects.filter(user=request.user)
+            except:
+                return JsonResponse({'status': 'error', 'message': 'Cart item not found'})
+            
+            if cart_item.quantity < product.stock_qty:
+                cart_item.quantity += 1
+                cart_item.save()
+                sub_total = cart_item.quantity * product.price
+                new_quantity = cart_item.quantity
+            else:
+                messages.warning(request, "Out of Stock")
+                return JsonResponse({'status': 'error', 'message': "out of stock"})    
+
+            for item in cart_items:
+                total += (item.product.price * item.quantity)
+                quantity += item.quantity
+            tax = (2 * total)/100
+            grand_total = total + tax 
+       
+            if new_quantity == 0 :
+                message = "out of stock"
+                return JsonResponse({'status': 'error', 'message': message})
+            else:
+                return JsonResponse({
+            'status': "success",
+            'new_quantity': new_quantity,
+            "total": total,
+            "tax": tax,
+            'counter':counter,
+            "grand_total": grand_total,
+            "sub_total":sub_total,
+            })
+        else:
+            # getting the session for getting the cart items 
+            try:
+                cart = Cart.objects.get(cart_id = _cart_id(request))  # get the cart using the cart_id present in the session 
+            except Cart.DoesNotExist:
+                cart = Cart.objects.create(
+                    cart_id=_cart_id(request)
+                    )  
+                cart.save()  
+            
+            # using the getted cart or created cart  trying get the cart item
+            
+            cart_item = CartItem.objects.get(cart=cart, product=product)
+            cart_items = CartItem.objects.filter(cart=cart)
+            if cart_item.quantity < product.stock_qty:
+                cart_item.quantity += 1
+                cart_item.save()
+                sub_total = cart_item.quantity * product.price
+                new_quantity = cart_item.quantity
+            else:
+                message = "Out of Stock"
+                return JsonResponse({"status":"error", "message":message})
+            for item in cart_items:
+                total += (item.product.price * cart_item.quantity)
+                quantity = item.quantity
+            tax = (2* total)/100
+            grand_total = tax + total
+
+            if new_quantity == 0:
+                message = "out of stock"
+                return JsonResponse({'status': 'error', 'message': message})
+            else:
+                return JsonResponse({
+                    'status': "success",
+                    'new_quantity': new_quantity,
+                    "total": total,
+                    "tax": tax,
+                    'counter':counter,
+                    "grand_total": grand_total,
+                    "sub_total":sub_total,
+                })
+
 # function to add the cart items using adjax 
 
-def add_to_cart_ajax(request):
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            prod_id = request.POST.get('product_id')
-            product_check = Product_varients.objects.get(uid=prod_id)
-            if (product_check):
-                if (CartItem.objects.filter(user=request.user , product=product_check)):
-                    return JsonResponse({'status':"product already in cart "})
-                else:
-                    prod_qty = int(request.POST.get('product_qty'))
-
-                    if product_check.stock_qty >= prod_qty:
-                        CartItem.objects.create(user=request.user , product= product_check , quantity=prod_qty)
-                        return JsonResponse({"status":"Product add sessuccfully "})
-                    else:
-                        return JsonResponse({'status':"Only "+str(product_check.stock_qty)+" this number of quantity available" })
-            else:
-                return JsonResponse({"status":'NO such product found '})
-            
-        else:
-            return JsonResponse({'status':"Login to continue ! "})
 
 
 
@@ -148,9 +222,96 @@ def remove_cart(request , product_uid):
     return redirect ('cart:cart_page')
 
 
+def ajax_remove_cart(request):
+    # initailizing the values 
+    new_quantity = 0
+    total = 0
+    tax = 0
+    grand_total = 0
+    quantity=0
+    counter=0
+    
+    
+    if request.method == "POST":
 
+        # getting the values from the fornt end 
+        prod_id = request.POST.get("product_id")
+        cart_item_id = int(request.POST.get('cart_id'))
+        qty = int(request.POST.get('qty'))
+        counter = int(request.POST.get('counter'))
+        product = get_object_or_404(Product_varients, uid=prod_id)
 
+        # if the user is authenticaed or logged in 
+        if request.user.is_authenticated :
+            try:
+                cart_item = CartItem.objects.get(product=product)
+                cart_items = CartItem.objects.filter(user=request.user)
+            except:
+                return JsonResponse({'status': 'error', 'message': 'Cart item not found'})
+            
+            if cart_item.quantity > 0 :
+                cart_item.quantity -= 1
+                cart_item.save()
+                sub_total = cart_item.quantity * product.price
+                new_quantity = cart_item.quantity
+            else:
+                cart_item.delete()
+                message = "the cart iem has bee deleted"
+                return JsonResponse({'status': 'error', 'message': message})
+            
+            for item in cart_items:
+                total += (cart_item.product.price * cart_item.quantity)
+                quantity = cart_item.quantity
+            tax = (2* total)/100
+            grand_total = tax + total
+            return JsonResponse({
+                    'status': "success",
+                    'new_quantity': new_quantity,
+                    "total": total,
+                    "tax": tax,
+                    'counter':counter,
+                    "grand_total": grand_total,
+                    "sub_total":sub_total,
+                })
+        else:
+            try :
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+            except Cart.DoesNotExist:
+                cart = Cart.objects.create(
+                    cart_id=_cart_id(request)
+                    )  
+                cart.save()  
+            cart_items = CartItem.objects.filter(cart=cart)
+            cart_item = CartItem.objects.get(product=product)
 
+            if cart_item.quantity > 0 :
+                cart_item.quantity -= 1
+                cart_item.save()
+                sub_total = cart_item.quantity * product.price
+                new_quantity = cart_item.quantity
+            else:
+                cart_item.delete()
+                message = "the cart iem has bee deleted"
+                return JsonResponse({'status': 'error', 'message': message})
+            for item in cart_items:
+                total += (cart_item.product.price * cart_item.quantity)
+                quantity = cart_item.quantity
+            tax = (2* total)/100
+            grand_total = tax + total
+            return JsonResponse({
+                    'status': "success",
+                    'new_quantity': new_quantity,
+                    "total": total,
+                    "tax": tax,
+                    'counter':counter,
+                    "grand_total": grand_total,
+                    "sub_total":sub_total,
+                })
+            
+
+            
+
+    
 
 
 
@@ -193,7 +354,7 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
         tax = (2 * total)/100
-        grand_total = total + tax
+        grand_total = total + tax 
     except :
         pass  # ingnore 
     
@@ -220,6 +381,8 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
 
 @login_required(login_url='account_management:user_login')
 def checkout(request, total = 0 , quantity = 0 , cart_items = None):
+    
+
     tax = 0
     grand_total = 0
     user_address_book_exists = userAddressBook.objects.filter(user=request.user).exists()
@@ -251,8 +414,10 @@ def checkout(request, total = 0 , quantity = 0 , cart_items = None):
         tax = (2 * total)/100
         grand_total = total + tax
     except :
-        pass  # ingnore 
+        pass  # ingnore
+
     
+
     context = { 
         'total': total ,
         'quantity': quantity ,
@@ -357,15 +522,18 @@ def wish_list(request):
 
 
 def add_to_wish_list(request, id):
-    product = Product_varients.objects.get(uid=id)
-    wish_list_exist = WishList.objects.filter(user=request.user, product=product).exists()
-    if wish_list_exist:
-        messages.info(request,"Already in the wishlist")
-        return redirect('cart:wish_list')
+    if request.user.is_authenticated:
+        product = Product_varients.objects.get(uid=id)
+        wish_list_exist = WishList.objects.filter(user=request.user, product=product).exists()
+        if wish_list_exist:
+            messages.info(request,"Already in the wishlist")
+            return redirect('cart:wish_list')
+        else:
+            wishlist_item = WishList.objects.create(user=request.user, product=product)
+            wishlist_item.save()
+            return redirect('cart:wish_list')
     else:
-        wishlist_item = WishList.objects.create(user=request.user, product=product)
-        wishlist_item.save()
-        return redirect('cart:wish_list')
+        return redirect ('product:shoping_page')
 
 
 
@@ -374,4 +542,6 @@ def remove_item_wish_list(request, id):
     wish_list = WishList.objects.get(user=request.user, product=product)
     wish_list.delete()
     return redirect('cart:wish_list')
+
+
 

@@ -23,5 +23,7 @@ urlpatterns = [
     path('wish_list/', views.wish_list, name="wish_list"),
     path('add_to_wish_list/<id>/', views.add_to_wish_list , name='add_to_wish_list'),
     path('remove_item_wish_list/<id>/', views.remove_item_wish_list , name="remove_item_wish_list"),
+    path('newcart_update', views.newcart_update, name="newcart_update"),
+    path('ajax_remove_cart', views.ajax_remove_cart, name="ajax_remove_cart"),
     
 ]

@@ -12,6 +12,7 @@ from cart.models import Cart , CartItem
 from orders.models import Order , Payment , OrderProduct
 from account_management.models import userAddressBook
 from product.models import Product_varients
+
 # -------------------------- forms ---------------------------------
 
 
@@ -45,6 +46,7 @@ def place_order(request):
 
     tax = (2 * total) / 100
     grand_total = total + tax
+    
 
     try:
         address = userAddressBook.objects.get(user=request.user, is_default=True)
@@ -85,7 +87,13 @@ def place_order(request):
             ip=ip,
             )
         order_object.save()
+
+
+
         
+
+
+
         request.session['pay_id']=payment_id
         if request.POST['payment'] == "COD" or 'Razorpay' :
             payment_object.payment_method = request.POST['payment']
@@ -106,6 +114,7 @@ def place_order(request):
             payment_object.rayzor_pay_order_id=payment['id']
             payment_object.save()
             
+
             # creating success url
             success_url = request.build_absolute_uri(reverse('orders:success'))
             context = {

@@ -7,6 +7,19 @@ from account_management.models import Account ,userAddressBook
 from product.models import Product , Product_varients
 # Create your models here.
 
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=10)
+    expiration_date = models.DateField(blank=True,null=True)
+    is_expired = models.BooleanField(default=False)
+    discount_price = models.IntegerField(default=100)
+    minimium_amount = models.IntegerField(default=5000)
+
+    def is_valid(self):
+        return not self.is_expired and self.expiration_date >= datetime.now().date()
+    
+    def __str__(self):
+        return self.coupon_code
+    
 
 class Payment(models.Model):
     PAYMENT_STATUS_CHOICE = (
@@ -84,16 +97,4 @@ class OrderProduct(models.Model):
 
 
 
-class Coupon(models.Model):
-    coupon_code = models.CharField(max_length=10)
-    expiration_date = models.DateField(blank=True,null=True)
-    is_expired = models.BooleanField(default=False)
-    discount_price = models.IntegerField(default=100)
-    minimium_amount = models.IntegerField(default=5000)
 
-    def is_valid(self):
-        return not self.is_expired and self.expiration_date >= datetime.now().date()
-    
-    def __str__(self):
-        return self.coupon_code
-    

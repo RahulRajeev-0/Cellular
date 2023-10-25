@@ -4,6 +4,7 @@
 {% block content %}
 
 {% load static %}
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <div class="container-fluid bg-secondary  mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
@@ -55,31 +56,47 @@
                         <td class="align-middle"><img src="{{ cart_item.product.thambnail.url }}" alt="" style="width: 50px;">{{ cart_item.product.product }}</td>
                         <td class="align-middle">{{cart_item.product.price}}</td>
                         <td class="align-middle product_data">
-                            <input type='hidden' value="{{cart_item.product.uid}}" class="prod_id">{% csrf_token %}
+                            {% csrf_token %}
+                        <div class="input-group input-spinner">
+                            <input type="hidden" value="{{cart_item.product.uid}}" id="product_id">
+                            <input type="hidden" value="{{forloop.counter}}" id='item_counter'>
+                            <input type="hidden" value="{{cart_item.id}} " id="cart_id">
+
                             <div class="input-group quantity mx-auto" style="width: 100px;">
                                 <div class="input-group-btn">
-                                    <a class="btn btn-sm btn-white btn-minus" href="{% url "cart:remove_cart" product_uid=cart_item.product.uid %}" >
-                                    <i class="fa fa-minus"></i>
+                                    <a class="btn btn-sm btn-white " id="button-minus" >
+                                    <i class="fa fa-minus  button-minus"></i>
                                     </a>
                                 </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center qty-input" value="{{cart_item.quantity}}">
+                                <input type="text" class="form-control form-control-sm bg-secondary text-center qty-input qty" value="{{cart_item.quantity}}">
                                 <div class="input-group-btn">
-                                    <a class="btn btn-sm btn-white btn-plus addToCartBtn" href="{% url "cart:add_cart" product_uid=cart_item.product.uid %}" >
-                                        <i class="fa fa-plus"></i>
+                                    <a class="btn btn-sm btn-white  " id="button-plus" >
+                                        <i class="fa fa-plus button-plus"></i>
                                     </a>
                                 </div>
                             </div>
+                        </div>
+
                         </td>
-                        <td class="align-middle">{{ cart_item.sub_total }}</td>
+                        <td class="align-middle sub_total">{{ cart_item.sub_total }}</td>
                         <td class="align-middle"><a href="{% url "cart:remove_cart_item" product_uid=cart_item.product.uid %}" class="btn btn-sm btn-white"><i class="fa fa-times"></i></a></td>
                     </tr>
+
+                    
                     {% endfor %}
                 </tbody>
             </table>
         </div>
        
         <div class="col-lg-4">
-           
+                    {% comment %} <form class="mb-5" action="{% url "cart:cart_page" %}" method="POST">{% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control p-4" placeholder="Coupon Code" name="coupon">
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" type="submit">Apply Coupon</button>
+                            </div>
+                        </div>
+                    </form> {% endcomment %}
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
@@ -87,11 +104,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3 pt-1">
                         <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">₹{{total}}</h6>
+                        <h6 class="font-weight-medium total">₹{{total}}</h6>
                     </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="font-weight-medium">Tax</h6>
-                        <h6 class="font-weight-medium">₹{{tax}}</h6>
+                        <h6 class="font-weight-medium tax ">₹{{tax}}</h6>
                     </div>
                     
                     
@@ -99,7 +116,7 @@
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
                         <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">₹{{grand_total}}</h5>
+                        <h5 class="font-weight-bold grand_total">₹{{grand_total}}</h5>
                     </div>
                     <a href="{% url "cart:checkout" %}" class="btn btn-block btn-dark my-3 py-3">Proceed To Checkout</a>
                 </div>
@@ -109,5 +126,99 @@
     {% endif %}
 </div>
 
+<script>
+    $(document).ready(function() {
+        var token = $('input[name=csrfmiddlewaretoken]').val();
+      
+        // Handle button clicks
+        $('.button-plus').click(function(e) {
+            e.preventDefault();
+    
+            var productId = $(this).closest('tr').find('#product_id').val();
+            var itemCounter = parseInt($(this).closest('tr').find('#item_counter').val(), 10);
+            var cartItemId = $(this).closest('tr').find('#cart_id').val();
+            var qtyInput = $(this).closest('.product_data').find('.qty');
+            var subTotalField = $(this).closest('tr').find('td.sub_total');
+    
+            // Make an AJAX request to update the cart item quantity
+            $.ajax({
+                method: "POST",
+                url: "{% url 'cart:newcart_update' %}",
+                data: {
+                    'product_id': productId,
+                    'cart_id': cartItemId,
+                    'qty': qtyInput.val(),
+                    'counter': itemCounter,
+                    'csrfmiddlewaretoken': token
+                },
+                success: function(response) {
+                    if (response.status === "success") {
+                        // Update the displayed quantity
+                        qtyInput.val(response.new_quantity);
+    
+                        // Update the subtotal for this specific cart item
+                        subTotalField.html("₹" + response.sub_total);
+    
+                        // Update total, grand total, and tax
+                        $('.total').text("₹" + response.total);
+                        $('.grand_total').text("₹" + response.grand_total);
+                        $('.tax').text("₹" + response.tax);
+                    } else if (response.status === "error") {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
 
+
+        $('.button-minus').click(function(e){
+            e.preventDefault();
+        
+            var productId = $(this).closest('tr').find('#product_id').val(); // Corrected line
+            var itemCounter = parseInt($(this).closest('tr').find('#item_counter').val(), 10);
+            var cartItemId = $(this).closest('tr').find('#cart_id').val();
+            var qtyInput = $(this).closest('.product_data').find('.qty');
+            var subTotalField = $(this).closest('tr').find('td.sub_total');
+            
+            // Make an AJAX request to update the cart item quantity
+            $.ajax({
+                method: "POST",
+                url: "{% url 'cart:ajax_remove_cart' %}",
+                data: {
+                    'product_id': productId,
+                    'cart_id': cartItemId,
+                    'qty': qtyInput.val(),
+                    'counter': itemCounter,
+                    'csrfmiddlewaretoken': token
+                },
+                success: function(response) {
+                    if (response.status === "success") {
+                        // Update the displayed quantity
+                        qtyInput.val(response.new_quantity);
+        
+                        // Update the subtotal for this specific cart item
+                        subTotalField.html("₹" + response.sub_total);
+        
+                        // Update total, grand total, and tax
+                        $('.total').text("₹" + response.total);
+                        $('.grand_total').text("₹" + response.grand_total);
+                        $('.tax').text("₹" + response.tax);
+                    } else  {
+                        location.reload();
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+    
+    
+</script>
 {% endblock content %}
