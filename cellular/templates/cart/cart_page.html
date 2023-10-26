@@ -208,7 +208,7 @@
                         $('.tax').text("₹" + response.tax);
                     } else  {
                         location.reload();
-                        alert(response.message);
+                        alertify.error(response.message);
                     }
                 },
                 error: function(xhr, status, error) {

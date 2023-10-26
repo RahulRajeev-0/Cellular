@@ -84,7 +84,7 @@ def add_cart(request, product_uid):
                 cart_item.save()
             else:
                 messages.warning(request, "Oops! It looks like the quantity you're trying to add is more than what we currently have in stock. Please adjust the quantity and try again. ")
-                return redirect ('cart:cart_page')
+                return redirect ('cart:cart_page')  
             
         except CartItem.DoesNotExist:
             cart_item = CartItem.objects.create(
@@ -249,7 +249,7 @@ def ajax_remove_cart(request):
             except:
                 return JsonResponse({'status': 'error', 'message': 'Cart item not found'})
             
-            if cart_item.quantity > 0 :
+            if cart_item.quantity > 1 :
                 cart_item.quantity -= 1
                 cart_item.save()
                 sub_total = cart_item.quantity * product.price

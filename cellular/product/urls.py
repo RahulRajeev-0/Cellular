@@ -9,4 +9,5 @@ urlpatterns = [
     path('product_details/<vuid>/',views.product_details,name='product_details'),
     path('shop_sreach/', views.shop_sreach , name='shop_sreach'),
     
+    
 ]

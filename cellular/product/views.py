@@ -1,4 +1,5 @@
 from django.shortcuts import render,HttpResponse , redirect
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
 from cart.models import Cart,CartItem , WishList
@@ -49,6 +50,23 @@ def product_details(request, vuid ):
         'in_cart':in_cart ,
             })
     
+
+
+
+
+# search suggestion 
+def get_names(request):
+    search = request.GET.get('search')
+    if search:
+        objs = Product_varients.objects.filter(product_heading__istartswith=search)
+        payload = [{'name': obj.product_heading} for obj in objs]
+    else:
+        payload = []
+
+    return JsonResponse({
+        'status': True,
+        'payload': payload
+    })  
 
 
 def shop_sreach(request):
