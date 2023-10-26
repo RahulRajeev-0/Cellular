@@ -23,6 +23,8 @@ def shoping_page(request):
     else:
         wishlist_items = WishList.objects.filter(user=request.user).values_list('product__uid', flat=True)
     paged_products = paginator.get_page(page)
+    
+        
     context = {
         'products': products, 
         'product_variants': paged_products,
@@ -79,3 +81,25 @@ def shop_sreach(request):
             context = {'product_variants':product_variants}
             return render(request, 'products/shoping.html', context)
     return redirect ('product:shoping_page')
+
+
+
+
+def filter_by_price(request):
+    if request.method == "POST":
+        value = request.POST.get('amount')
+        if value == "-15000":
+            product_variants = Product_varients.objects.filter(price__lt=15000.0)
+        elif value == "-30000":
+            product_variants = Product_varients.objects.filter(price__lt=30000.0)
+        elif value == "-50000":
+            product_variants = Product_varients.objects.filter(price__lt=50000.0)
+        elif value == "-70000":
+            product_variants = Product_varients.objects.filter(price__lt=70000.0)
+        elif value == "-90000":
+            product_variants = Product_varients.objects.filter(price__lt=90000.0)
+        else:
+            product_variants = Product_varients.objects.filter(price__gte=90000.0)
+        
+        context = {'product_variants': product_variants}
+        return render(request, 'products/shoping.html', context)

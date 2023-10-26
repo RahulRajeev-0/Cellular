@@ -3,7 +3,10 @@ import datetime
 from django.contrib import messages
 import uuid
 import razorpay
-
+from django.utils import timezone
+from datetime import datetime, timedelta
+from django.db.models import Sum
+from django.http import JsonResponse
 # ------------------- settings -------------
 from django.conf import settings
 
@@ -59,11 +62,11 @@ def place_order(request):
 
         #generating unique number 
         unique_id = uuid.uuid4().hex[:10]  # Generates a random 10-character hexadecimal string
-        current_date = datetime.datetime.now().strftime("%Y%m%d")
+        current_date = datetime.now().strftime("%Y%m%d")
         order_number = f"{current_date}-{unique_id}"
 
         unique_id_payment = uuid.uuid4().hex[:10]  # Generates a random 10-character hexadecimal string
-        current_date = datetime.datetime.now().strftime("%Y%m%d")
+        current_date = datetime.now().strftime("%Y%m%d")
         order_number = f"{current_date}-{unique_id_payment}"
         payment_id=unique_id_payment
 
@@ -298,3 +301,54 @@ def user_order_return(request,id):
     order.status = "Return"
     order.save()
     return redirect("orders:order_listing_user")
+
+
+
+
+
+
+def get_weekly_sales():
+    end_date = timezone.now()
+    start_date = end_date - timezone.timedelta(days=7)
+
+    return OrderProduct.objects.filter(
+        order__created_at__range=(start_date, end_date)
+    ).values('product__product_heading').annotate(weekly_sales=Sum('quantity'))
+
+
+
+
+def get_monthly_sales():
+    end_date = timezone.now()
+    start_date = end_date - timezone.timedelta(days=30)
+
+    return OrderProduct.objects.filter(
+        order__created_at__range=(start_date, end_date)
+    ).values('product__product_heading').annotate(monthly_sales=Sum('quantity'))
+
+
+
+
+def get_yearly_sales():
+        end_date = timezone.now()
+        start_date = end_date - timezone.timedelta(days=365)
+
+        return OrderProduct.objects.filter(
+            order__created_at__range=(start_date, end_date)
+        ).values('product__product_heading').annotate(yearly_sales=Sum('quantity')) 
+
+
+def sales_report(request):
+    weekly_sales_data = list(get_weekly_sales().values('product__product_heading','weekly_sales'))  # Convert QuerySet to a list of dictionaries
+    monthly_sales_data = list(get_monthly_sales().values('product__product_heading','monthly_sales'))
+    yearly_sales_data = list(get_yearly_sales().values('product__product_heading','yearly_sales'))
+    sales_data = {
+        'weekly_sales': weekly_sales_data,
+        'monthly_sales': monthly_sales_data,
+        'yearly_sales': yearly_sales_data,
+    }
+    print("+++++++++++++++/n")
+    print(sales_data)
+    return JsonResponse(sales_data, safe=False)
+
+
