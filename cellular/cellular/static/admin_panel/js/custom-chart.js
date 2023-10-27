@@ -109,15 +109,15 @@ async function getSalesReport() {
         
         async function drawChart() {
             const salesData = await getSalesReport();
-        
+           
             const ctx = document.getElementById('myChart').getContext('2d');
         
             
-            const productNames = salesData.weekly_sales.map(item => item.product__product_heading);
+            const productNames = salesData.weekly_sales.map(item => item.product__product_heading.slice(0, 10));
             const weeklySales = salesData.weekly_sales.map(item => item.weekly_sales);
             const monthlySales = salesData.monthly_sales.map(item => item.monthly_sales);
             const yearlySales = salesData.yearly_sales.map(item => item.yearly_sales);
-            
+         
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {

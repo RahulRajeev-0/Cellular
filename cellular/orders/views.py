@@ -294,13 +294,18 @@ def user_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancel"
     order.save()
-    return redirect("orders:order_details_user")
+    order_products = OrderProduct.objects.filter(order=order)
+    for order_product in order_products:
+        product = Product_varients.objects.get(uid=order_product.product.uid)
+        product.stock_qty += order_product.quantity 
+        product.save()
+    return redirect("orders:order_details_user", id=order.order_number)
 
 def user_order_return(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Return"
     order.save()
-    return redirect("orders:order_listing_user")
+    return redirect("orders:order_listing_user", id=order.order_number)
 
 
 
@@ -347,7 +352,7 @@ def sales_report(request):
         'monthly_sales': monthly_sales_data,
         'yearly_sales': yearly_sales_data,
     }
-    print("+++++++++++++++/n")
+    
     print(sales_data)
     return JsonResponse(sales_data, safe=False)
 

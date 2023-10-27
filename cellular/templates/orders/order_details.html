@@ -31,7 +31,7 @@
                   <span class="badge rounded-pill bg-warning">{{order.status}}</span>
                   <br>
                   <br>
-                  {% if order.status != "Completed" and order.status != "Return" and order.status != "Returned" %}
+                  {% if order.status != "Completed" and order.status != "Return" and order.status != "Returned" and order.status != "Cancel" %}
                   <a class='btn btn-dark' href="{% url "orders:user_order_cancel" id=order.order_number %}">Cancel Order</a>
                   {% endif %}
                   {% if order.status == "Completed" %}

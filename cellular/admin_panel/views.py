@@ -487,6 +487,11 @@ def admin_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancelled by Admin"
     order.save()
+    order_products = OrderProduct.objects.filter(order=order)
+    for order_product in order_products:
+        product = Product_varients.objects.get(uid=order_product.product.uid)
+        product.stock_qty += order_product.quantity 
+        product.save()
     return redirect('admin_panel:order_listing')
 
 
@@ -506,6 +511,11 @@ def admin_order_returned(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Returned"
     order.save()
+    order_products = OrderProduct.objects.filter(order=order)
+    for order_product in order_products:
+        product = Product_varients.objects.get(uid=order_product.product.uid)
+        product.stock_qty += order_product.quantity 
+        product.save()
     return redirect('admin_panel:order_listing')
 
 
