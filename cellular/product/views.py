@@ -36,6 +36,9 @@ def shoping_page(request):
 
 def product_details(request, vuid ):
     product_variant_instance = get_object_or_404(Product_varients, uid = vuid)
+    product_varients = Product_varients.objects.filter(product=product_variant_instance.product).exclude(uid=vuid)
+    print("++++++++++++++++++++\n")
+    print(product_varients)
     ram_variants = RamVarient.objects.filter(product_varients = product_variant_instance)
     color_varients = ColorVarient.objects.filter(product_varients = product_variant_instance)
     photos = product_variant_instance.product_images.all()
@@ -50,6 +53,7 @@ def product_details(request, vuid ):
         'color_varients':color_varients ,
         'photos':photos ,
         'in_cart':in_cart ,
+        'product_varients':product_varients,
             })
     
 

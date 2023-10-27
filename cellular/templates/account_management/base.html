@@ -68,14 +68,17 @@
                                 <div class="dropdown-menu rounded-0 m-0">
                                    
                                     {% if user.is_authenticated %}
-                                    <a href={% url "account_management:logout_user" %} class="dropdown-item text-dark ">Log out</a>
                                     <a href={% url "orders:order_listing_user" %} class="dropdown-item text-dark ">My Orders</a>
+                                    <a href={% url "orders:order_listing_user" %} class="dropdown-item text-dark ">My Wallet</a>
+                                    <a href={% url "orders:order_listing_user" %} class="dropdown-item text-dark ">My Profile</a>
+                                    <a href={% url "account_management:logout_user" %} class="dropdown-item text-danger ">Log out</a>
                                     {% else %}
                                     <a href={% url "account_management:user_login" %} class="dropdown-item text-dark">Login</a>
                                     <a href={% url "account_management:user_signUp" %} class="dropdown-item text-dark ">Sign Up</a>
                                     {% endif %}
                                 </div>
                             </div>
+                            <a href={% url "product:shoping_page"%} class="nav-item nav-link text-dark ">Offers</a>
                         </div>
                         
                         <div class="navbar-nav py-0">

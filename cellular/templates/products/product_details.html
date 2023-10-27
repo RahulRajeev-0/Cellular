@@ -46,45 +46,44 @@
             <!--================ proudct price and discription is mensioned here==============-->
 
 
-            <h6 class="font-weight-semi-bold mb-4">{% if product_variants.stock_qty %} ₹ {{product_variants.price}} {% else %} Out of Stock {% endif %} </h6>
-            <p class="mb-4"> {{product.product_description}} </p>
+            <h6 class="font-weight-semi-bold mb-4">
+                {% if product_variants.stock_qty %} ₹ {{product_variants.price}} {% else %} Out of Stock {% endif %} </h6>
+             <p class="mb-4"> {{product.product_description}} </p>
+        
+        
+             <p>Other Variations: Available</p>
+            {% if product_varients %}
+            
+            {% for product_variant in product_varients %}
 
+            <a href="{% url 'product:product_details' vuid=product_variant.uid  %}" class="btn btn-outline-dark  ">Ram :{{product_variant.ram}} , Color : {{product_variant.color}}</a>
+ 
+            
+            {% endfor %}
+            {% else %}
+            <h6 class="text-danger">None</h6> 
+            {% endif %}
 
 <!--=============== if variation for product is available then show them else don't ==================== -->
-{% if ram_variants %}
+
 <div class="d-flex mb-3">
-    <p class="text-dark font-weight-medium mb-0 mr-3">Ram:</p>
-    <form>
-        <!-- for getting the ram variation using loop -->
-        {% for ram in ram_variants %}
-        <div class="custom-control custom-radio custom-control-inline">
-            <input type="radio" class="custom-control-input" id="ram-{{ ram.id }}" name="ram" value="{{ ram.id }}">
-            <label class="custom-control-label" for="ram-{{ ram.id }}">{{ ram.ram_no }}</label>
-        </div>
-        {% endfor %}
-    </form>
+   
 </div>
-{% endif %}
+
 
 <!--=============== if variation for product is available then show them else don't ==================== -->
-
-            {% if color_varients %}
+        
+        
             <div class="d-flex mb-4">
-                <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                <form>
+                
 
             
                     <!--======== for getting the color variation using loop ======-->
 
-                    {% for color in color_varients  %}
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" class="custom-control-input" id="color-1" name="color">
-                        <label class="custom-control-label" for="color-1"> {{color.color_name}} </label>
-                    </div>
-                    {% endfor %}
-                </form>
+                    
+                    
             </div>
-            {% endif %}
+            
         
             {% if product_variants.stock_qty %}  
               
@@ -93,10 +92,11 @@
                 <div class="input-group quantity mr-3" style="width: 130px;">
                     
                 </div>
+                
                 <a href="#" class="btn btn-success "><i class="fa fa-check mr-1"></i>Added in Cart</a>
                 <a href="{% url "cart:cart_page" %}" class="btn btn-outline-info "><i class="fa fa-eye mr-1"></i>View in Cart</a>
             </div>
-
+            
             
             {% else %}
 
@@ -112,7 +112,7 @@
 
             
             {% endif %}
-
+            
 
             <div class="d-flex pt-2">
                 <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>

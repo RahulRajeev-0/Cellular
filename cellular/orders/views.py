@@ -175,6 +175,8 @@ def cash_on_delivery(request):
             product=product,
             quantity=quantity,
             product_price=price,
+            ordered=True,
+            
             )
         ordered_product.save()
         product_vareint = Product_varients.objects.get(uid=cart_item.product.uid)
@@ -231,6 +233,7 @@ def success (request):
             product=product,
             quantity=quantity,
             product_price=price,
+            ordered=True,
             )
         ordered_product.save()
         product_vareint = Product_varients.objects.get(uid=cart_item.product.uid)
