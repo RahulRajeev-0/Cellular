@@ -2,7 +2,8 @@ from django.forms import ModelForm
 from django import forms
 
 # imported models in here 
-from offers.models import ProductOffer
+from offers.models import ProductOffer, CategoryOffer
+
 
 
 
@@ -29,3 +30,18 @@ class CreateProductOfferForm(ModelForm):
             'expire_date': DateInput(),
         }
         
+class CreateCategoryOfferForm(ModelForm):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+        self.fields['is_active'].widget.attrs['class'] = ''
+        self.fields['category'].widget.attrs['class'] = 'select'
+    class Meta:
+        model = CategoryOffer
+        fields = "__all__"
+        exclude = ['category_offer_slug']
+        widgets = {
+            'expire_date': DateInput(),
+        }

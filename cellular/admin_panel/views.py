@@ -15,13 +15,14 @@ from product.models import Brand, Product, RamVarient, ColorVarient , Product_va
 from categoryManagement.models import Category
 from orders.models import Order , OrderProduct , Payment
 from orders.models import Coupon 
-from offers.models import ProductOffer
+from offers.models import ProductOffer, CategoryOffer
 
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
 from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
-from offers.forms import CreateProductOfferForm
+from offers.forms import CreateProductOfferForm, CreateCategoryOfferForm
 from orders.forms import CouponForm
+
 
 
 
@@ -562,10 +563,7 @@ def coupons_edit(request,id):
 
 # product offer listing
 def product_offers(request):
-    
     list = ProductOffer.objects.all()
-    print("+++++++++++++++++++++++++++++++/n")
-    print(list)
     return render(request, "admin_templates/offers/product_offers.html",{"list":list})
 
 
@@ -612,6 +610,46 @@ def delete_product_offer(request,id):
 
 
 
+
+
+# ----------------------- FUNCTIONS FOR CATEGORY OFFERS -------------------------------
+
+def category_offers(request):
+    list = CategoryOffer.objects.all()
+    return render (request, "admin_templates/offers/category_offers.html",{"list":list})
+
+def add_category_offers(request):
+    if request.method == "POST":
+        form = CreateCategoryOfferForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel:category_offers')
+        else:
+            print(form.errors)
+    else:
+        form = CreateCategoryOfferForm()
+    return render(request, 'admin_templates/offers/add_category_offer.html', {'form':form})
+
+
+def edit_category_offer(request, id):
+    offer = get_object_or_404(CategoryOffer, id=id)
+    if request.method == "POST":
+        form = CreateCategoryOfferForm(request.POST, request.FILES, instance=offer)
+        if form.is_valid():
+            form.save()
+            return redirect ('admin_panel:category_offers')
+        else:
+            print(form.errors)
+    else:
+        form = CreateCategoryOfferForm(instance=offer)
+    return render(request, 'admin_templates/offers/edit_category_offer.html',{'form':form})
+
+
+
+def delete_category_offer(request, id):
+    offer = CategoryOffer.objects.get(id=id)
+    offer.delete()
+    return redirect('admin_panel:category_offers')
 
 
 
