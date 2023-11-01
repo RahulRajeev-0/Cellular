@@ -346,6 +346,12 @@ def cart_page(request, total = 0 , quantity = 0 , cart_items = None):
     
     try :
         if request.user.is_authenticated:
+            if request.method == "POST":
+                coupon = request.POST.get('coupon')
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                # print("+++++++++++++++++++++++++++++++++++++\n")
+                # print(cart)
+                return redirect("cart:cart_page")
             cart_items = CartItem.objects.filter(user = request.user, is_active = True)
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))

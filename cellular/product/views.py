@@ -1,11 +1,16 @@
 from django.shortcuts import render,HttpResponse , redirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
-from cart.models import Cart,CartItem , WishList
+
 from cart.views import _cart_id
 from django.core.paginator import EmptyPage , PageNotAnInteger , Paginator
 
+
+
+# models
+from product.models import Product ,Product_varients , RamVarient ,ColorVarient , ProductImage
+from cart.models import Cart,CartItem , WishList
+from account_management.models import HomeMainSlide
 # Create your views here.
 
 
@@ -107,3 +112,9 @@ def filter_by_price(request):
         
         context = {'product_variants': product_variants}
         return render(request, 'products/shoping.html', context)
+    
+
+
+
+# function for rendering the offer page 
+

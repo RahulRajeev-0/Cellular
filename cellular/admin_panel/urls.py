@@ -69,4 +69,11 @@ urlpatterns = [
     path('coupons_listing/', views.coupons_listing , name="coupons_listing"),
     path('coupons_edit/<id>', views.coupons_edit , name="coupons_edit"),
 
+
+    # ----------------------------------product offers ----------------------------------------
+    path('product_offers/', views.product_offers, name='product_offers'),
+    path('add_product_offers/', views.add_product_offers, name='add_product_offers'),
+    path('edit_product_offer/<int:id>/', views.edit_product_offer, name="edit_product_offer"),
+    path('delete_product_offer/<int:id>/', views.delete_product_offer, name='delete_product_offer'),
+
 ]

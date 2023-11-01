@@ -3,6 +3,7 @@
 {% block content %}
 
 {% load static %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div class="container-fluid bg-secondary mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px">
@@ -68,7 +69,17 @@
             
         <div class="col-lg-4">
             <!-- coupons code -->
-            
+            <div id="coupon-message"></div>
+
+            <form class="mb-5"  method="POST">{% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control p-4" placeholder="Coupon Code" name="coupon">
+                    <div class="input-group-append">
+                        <button class="btn btn-dark"  id="coupon-apply">Apply Coupon</button>
+                    </div>
+                </div>
+            </form> 
+        
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Order Total</h4>
@@ -96,7 +107,7 @@
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
                         <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">₹{{grand_total}}</h5>
+                        <h5 class="font-weight-bold" id="grand-total" data-grand-total="{{grand_total}}">₹{{grand_total}}</h5>
                     </div>
                 </div>
             </div>
@@ -133,4 +144,47 @@
 </div>
 
 
+<script>
+    $(document).ready(function(){
+        var token = $('input[name=csrfmiddlewaretoken]').val();
+
+        // handling button click 
+        $('#coupon-apply').click(function(e){
+            e.preventDefault();
+
+            var couponCode = $('input[name=coupon]').val();
+            var grandTotal = $('#grand-total').data('grand-total');
+           
+
+            // making the ajax request to update the cart item quantity
+            $.ajax({
+                method:"POST",
+                url:'{% url "orders:ajax_coupon" %}',
+                data: {
+                    'couponCode':couponCode,
+                    'grandTotal':grandTotal,
+                    'csrfmiddlewaretoken': token,
+                },
+                success:function(data){
+                    if (data.success){
+                    $('#grand-total').data('grand-total', data.newGrandTotal);
+                    $('#grand-total').text('₹' + data.newGrandTotal);
+                    $('#coupon-message').text(data.message).removeClass('text-danger').addClass('text-success');
+                    console.log(data);
+                    }
+                    else {
+                        // Coupon application failed, show an error message
+                        $('#coupon-message').text(data.message).removeClass('text-success').addClass('text-danger');
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            })
+
+        });
+
+
+    })
+</script>
 {% endblock content %}

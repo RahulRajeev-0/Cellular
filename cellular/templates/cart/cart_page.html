@@ -89,14 +89,16 @@
         </div>
        
         <div class="col-lg-4">
-                    {% comment %} <form class="mb-5" action="{% url "cart:cart_page" %}" method="POST">{% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control p-4" placeholder="Coupon Code" name="coupon">
-                            <div class="input-group-append">
-                                <button class="btn btn-dark" type="submit">Apply Coupon</button>
-                            </div>
-                        </div>
-                    </form> {% endcomment %}
+            {% comment %} {% if request.user.is_authenticated %}
+            <form class="mb-5" action="" method="POST">{% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control p-4" placeholder="Coupon Code" name="coupon">
+                    <div class="input-group-append">
+                        <button class="btn btn-dark" type="submit">Apply Coupon</button>
+                    </div>
+                </div>
+            </form> 
+            {% endif %} {% endcomment %}
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>

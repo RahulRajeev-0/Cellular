@@ -15,11 +15,12 @@ from product.models import Brand, Product, RamVarient, ColorVarient , Product_va
 from categoryManagement.models import Category
 from orders.models import Order , OrderProduct , Payment
 from orders.models import Coupon 
+from offers.models import ProductOffer
 
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
 from account_management.forms import HomeMainSliderForm, HomeSubBannerForm 
-
+from offers.forms import CreateProductOfferForm
 from orders.forms import CouponForm
 
 
@@ -551,6 +552,67 @@ def coupons_edit(request,id):
     else:
         form = CouponForm(instance=coupon)
     return render(request, "admin_templates/coupons/coupons_edit.html", {'form':form})
+
+
+
+
+# ---------------------------- FUNCTIONS HANDLING PRODUCT OFFERS ------------------------------------
+
+
+
+# product offer listing
+def product_offers(request):
+    
+    list = ProductOffer.objects.all()
+    print("+++++++++++++++++++++++++++++++/n")
+    print(list)
+    return render(request, "admin_templates/offers/product_offers.html",{"list":list})
+
+
+
+# add new product offer 
+def add_product_offers(request):
+    if request.method == "POST":
+        form = CreateProductOfferForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Product Offer Add ")
+            return redirect("admin_panel:product_offers")
+        else:
+            print(form.errors)
+            
+    else:
+        form = CreateProductOfferForm()
+    return render (request, "admin_templates/offers/add_product_offers.html",{'form':form})
+
+
+
+# edit product offer 
+def edit_product_offer(request,id):
+    offer = get_object_or_404(ProductOffer, id=id)
+    if request.method == "POST":
+        form = CreateProductOfferForm(request.POST, request.FILES , instance=offer)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Edited Offer Edited Successfully ")
+            return redirect('admin_panel:product_offers')
+        else:
+            print(form.errors)
+    else:
+        form = CreateProductOfferForm(instance=offer)
+    
+    return render(request, "admin_templates/offers/edit_product_offers.html",{"form":form})
+
+
+def delete_product_offer(request,id):
+    offer = get_object_or_404(ProductOffer,id=id)
+    offer.delete()
+    return redirect("admin_panel:product_offers")
+
+
+
+
+
 
 
 # --------------- fucntion for ad logout ---------------------------

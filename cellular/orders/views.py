@@ -12,7 +12,7 @@ from django.conf import settings
 
 # --------------------------- models  ---------------------------------
 from cart.models import Cart , CartItem
-from orders.models import Order , Payment , OrderProduct
+from orders.models import Order , Payment , OrderProduct , Coupon
 from account_management.models import userAddressBook
 from product.models import Product_varients
 
@@ -92,11 +92,6 @@ def place_order(request):
         order_object.save()
 
 
-
-        
-
-
-
         request.session['pay_id']=payment_id
         if request.POST['payment'] == "COD" or 'Razorpay' :
             payment_object.payment_method = request.POST['payment']
@@ -138,7 +133,40 @@ def place_order(request):
     return redirect('cart:checkout')
 
 
+def ajax_coupon(request):
+    if request.method == "POST":
+        coupon_code = request.POST.get('couponCode')
+        grand_total = float(request.POST.get('grandTotal'))
 
+        try:
+            coupon = Coupon.objects.get(coupon_code=coupon_code,is_expired=False)
+            if grand_total >= coupon.minimium_amount:
+                new_grand_total = grand_total - coupon.discount_price
+            else:
+                new_grand_total = grand_total
+            response_data = {
+                'success': True,
+                'message': 'Coupon applied successfully!',
+                'newGrandTotal':new_grand_total,
+            }
+            return JsonResponse(response_data)
+        except:
+            response_data = {
+            'success': False,
+            'message': 'Invalid coupon code. Please try again with a valid code.',
+            'error':'Invalid request'
+        }
+            return JsonResponse(response_data, status=400)
+    else:
+        response_data = {
+            'success': False,
+            'message': 'Invalid request',
+        }
+        return JsonResponse(response_data, status=400)
+
+
+
+        
 
 
 
@@ -293,6 +321,10 @@ def order_details_user(request,id):
 
 
 # order cancel by user 
+
+
+
+
 def user_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancel"
@@ -304,11 +336,23 @@ def user_order_cancel(request,id):
         product.save()
     return redirect("orders:order_details_user", id=order.order_number)
 
+
+
+
+
+
+
 def user_order_return(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Return"
     order.save()
     return redirect("orders:order_listing_user", id=order.order_number)
+
+
+
+
+
+
 
 
 
@@ -356,7 +400,7 @@ def sales_report(request):
         'yearly_sales': yearly_sales_data,
     }
     
-    print(sales_data)
+    
     return JsonResponse(sales_data, safe=False)
 
 

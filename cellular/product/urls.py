@@ -10,5 +10,6 @@ urlpatterns = [
     path('shop_sreach/', views.shop_sreach , name='shop_sreach'),
     path('filter_by_price/', views.filter_by_price, name="filter_by_price"),
     
+  
     
 ]

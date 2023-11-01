@@ -8,6 +8,7 @@ from orders.models import Coupon
 
 class Cart(models.Model):
     cart_id = models.CharField(max_length = 250, blank = True)
+    user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True , blank=True)
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True )
     date_added = models.DateField(auto_now_add = True)
 
