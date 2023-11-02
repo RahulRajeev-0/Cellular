@@ -3,9 +3,8 @@ from base.models import BaseModel
 from django.utils import timezone
 from django.utils.text import slugify
 from categoryManagement.models import Category
-
 from PIL import Image
-
+from datetime import datetime
 
 # ----------------- create your models here -------------------------------
 
@@ -123,6 +122,62 @@ class Product_varients(BaseModel):
         super(Product_varients, self).save(*args , **kwargs)
 
 
+
+
+    def product_price(self):
+        offer_percentage = 0
+
+        # adding category offer
+        try:
+            if self.product.product_category.categoryoffer_set.filter(is_active=True, expire_date__gte = datetime.now()).exists():
+                offer_percentage = self.product.product_category.categoryoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).values_list('discount_percentage', flat=True).order_by('-discount_percentage').first()
+        except Exception as e:
+            print(e)
+            offer_percentage = 0
+
+        # adding product offer
+        try:
+
+            if self.productoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).exists():
+                offer_percentage = offer_percentage + self.productoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).values_list('discount_percentage', flat=True).order_by('-discount_percentage').first()
+                
+        except:
+            pass
+
+        if offer_percentage >= 100:
+            offer_percentage = 100
+
+        offer_price = self.price - self.price * (offer_percentage) / (100)
+
+        return offer_price
+    
+
+    def product_offer(self):
+        offer_price = {
+            'offer_percentage': 0,
+            'offer_name': "",
+        }
+
+        #adding the category offer 
+        if self.product.product_category.categoryoffer_set.filter(is_actve=True, expire_date__gte=datetime.now()).exists():
+            category_offer = self.product.product_category.categoryoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).order_by('-discount_percentage').first()
+            offer_price['offer_percentage'] = category_offer.discount_percentage
+            offer_price['offer_name'] = category_offer.offer_name
+
+        #adding the product offer 
+        if self.productoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).exists():
+            try:
+                product_offer = self.productoffer_set.filter(is_active=True, expire_date__gte=datetime.now()).order_by('-discount_percentage').first()
+                
+                offer_price['offer_percentage'] += product_offer.discount_percentage
+                offer_price['offer_name'] += "," + product_offer.offer_name
+            except Exception as e:
+                print(e)
+
+        if offer_price['offer_percentage'] >= 100:
+            offer_price['offer_percentage'] = 100
+
+        return int(offer_price)
 
 
 

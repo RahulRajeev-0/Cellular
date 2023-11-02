@@ -264,7 +264,7 @@
             <p class="text-truncate mb-3">Ram: {{ variant.ram }}<br>color: {{ variant.color }}</p>
            
             <div class="d-flex justify-content-center">
-                <h6>{{ variant.price }}</h6><h6 class="text-muted ml-2"><del></del></h6>
+                <h6>₹{{ variant.product_price }}</h6>{% if variant.price != variant.product_price %}<h6 class="text-muted ml-2"><del class="text-danger">{{variant.price}}</del></h6>{% endif %}
             </div>
         </div>
         <div class="card-footer d-flex justify-content-between bg-light border">

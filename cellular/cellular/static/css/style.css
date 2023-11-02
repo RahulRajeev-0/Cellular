@@ -9495,7 +9495,11 @@ a.text-dark:hover, a.text-dark:focus {
   height: 100%;
   object-fit: cover;
 }
-
+#category-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .carousel-caption {
   top: 0;
   left: 0;

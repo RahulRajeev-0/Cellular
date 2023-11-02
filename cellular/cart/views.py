@@ -124,14 +124,15 @@ def newcart_update(request):
             if cart_item.quantity < product.stock_qty:
                 cart_item.quantity += 1
                 cart_item.save()
-                sub_total = cart_item.quantity * product.price
+                sub_total = cart_item.quantity * product.product_price()
+                
                 new_quantity = cart_item.quantity
             else:
                 messages.warning(request, "Out of Stock")
                 return JsonResponse({'status': 'error', 'message': "out of stock"})    
 
             for item in cart_items:
-                total += (item.product.price * item.quantity)
+                total += (item.product.product_price() * item.quantity)
                 quantity += item.quantity
             tax = (2 * total)/100
             grand_total = total + tax 
@@ -166,13 +167,13 @@ def newcart_update(request):
             if cart_item.quantity < product.stock_qty:
                 cart_item.quantity += 1
                 cart_item.save()
-                sub_total = cart_item.quantity * product.price
+                sub_total = cart_item.quantity * product.product_price()
                 new_quantity = cart_item.quantity
             else:
                 message = "Out of Stock"
                 return JsonResponse({"status":"error", "message":message})
             for item in cart_items:
-                total += (item.product.price * cart_item.quantity)
+                total += (item.product.product_price() * cart_item.quantity)
                 quantity = item.quantity
             tax = (2* total)/100
             grand_total = tax + total
@@ -252,7 +253,7 @@ def ajax_remove_cart(request):
             if cart_item.quantity > 1 :
                 cart_item.quantity -= 1
                 cart_item.save()
-                sub_total = cart_item.quantity * product.price
+                sub_total = cart_item.quantity * product.product_price()
                 new_quantity = cart_item.quantity
             else:
                 cart_item.delete()
@@ -260,7 +261,7 @@ def ajax_remove_cart(request):
                 return JsonResponse({'status': 'error', 'message': message})
             
             for item in cart_items:
-                total += (cart_item.product.price * cart_item.quantity)
+                total += (cart_item.product.product_price() * cart_item.quantity)
                 quantity = cart_item.quantity
             tax = (2* total)/100
             grand_total = tax + total
@@ -287,14 +288,14 @@ def ajax_remove_cart(request):
             if cart_item.quantity > 0 :
                 cart_item.quantity -= 1
                 cart_item.save()
-                sub_total = cart_item.quantity * product.price
+                sub_total = cart_item.quantity * product.product_price()
                 new_quantity = cart_item.quantity
             else:
                 cart_item.delete()
                 message = "the cart iem has bee deleted"
                 return JsonResponse({'status': 'error', 'message': message})
             for item in cart_items:
-                total += (cart_item.product.price * cart_item.quantity)
+                total += (cart_item.product.product_price() * cart_item.quantity)
                 quantity = cart_item.quantity
             tax = (2* total)/100
             grand_total = tax + total
@@ -411,7 +412,7 @@ def checkout(request, total = 0 , quantity = 0 , cart_items = None):
         # cart = Cart.objects.get(user=ses)
         cart_items = CartItem.objects.filter(user = request.user, is_active = True)
         for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item.quantity)
+            total += (cart_item.product.product_price() * cart_item.quantity)
             if cart_item.product.stock_qty > 0:
                 quantity += cart_item.quantity
             else:

@@ -47,7 +47,7 @@
 
 
             <h6 class="font-weight-semi-bold mb-4">
-                {% if product_variants.stock_qty %} ₹ {{product_variants.price}} {% else %} Out of Stock {% endif %} </h6>
+                {% if product_variants.stock_qty %} {% if product_variants.price != product_variants.product_price %}₹{{product_variants.product_price}} <del class="text-danger">{{product_variants.price}}</del> {% else %}₹{{product_variants.price}} {% endif %} {% else %} Out of Stock {% endif %} </h6>
              <p class="mb-4"> {{product.product_description}} </p>
         
         

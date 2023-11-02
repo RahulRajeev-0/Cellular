@@ -42,8 +42,6 @@ def shoping_page(request):
 def product_details(request, vuid ):
     product_variant_instance = get_object_or_404(Product_varients, uid = vuid)
     product_varients = Product_varients.objects.filter(product=product_variant_instance.product).exclude(uid=vuid)
-    print("++++++++++++++++++++\n")
-    print(product_varients)
     ram_variants = RamVarient.objects.filter(product_varients = product_variant_instance)
     color_varients = ColorVarient.objects.filter(product_varients = product_variant_instance)
     photos = product_variant_instance.product_images.all()
@@ -60,12 +58,16 @@ def product_details(request, vuid ):
         'in_cart':in_cart ,
         'product_varients':product_varients,
             })
-    
 
 
 
 
-# search suggestion 
+
+
+
+
+
+# ------------------------------------ SEARCH SUGGESTIONS  -------------------------------
 def get_names(request):
     search = request.GET.get('search')
     if search:
@@ -93,7 +95,8 @@ def shop_sreach(request):
 
 
 
-
+# -------------------------- FILTER BY PRICE ---------------------------------------
+ 
 def filter_by_price(request):
     if request.method == "POST":
         value = request.POST.get('amount')

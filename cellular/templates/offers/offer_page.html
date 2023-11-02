@@ -21,9 +21,11 @@
     <div class="text-center mb-4">
         <h2 class="section-title px-5"><span class="px-2">Product Offers</span></h2>
     </div>
+
+    {% if product_offer_slide %}
     <div id="header-carousel" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
-            {% for slide in main_slid %}
+            {% for slide in product_offer_slide %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height: 450px;">
                 <img class="img-fluid" src="{{ slide.product_offer_image.url }}" alt="Image">
                 <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
@@ -32,7 +34,7 @@
                         <h5 class="display-4 text-white font-weight-semi-bold mb-4">%{{ slide.discount_percentage }} Offer</h5>
                         <h3 class="display-4 text-white font-weight-semi-bold mb-4">{{ slide.offer_name }}</h3>
                        
-                        <a href="{% url 'product:shoping_page' %}" class="btn btn-outline-warning py-2 px-3">Shop Now</a>
+                        <a href="{% url 'offers:shop_product_offer' id=slide.id %}" class="btn btn-outline-warning py-2 px-3">Shop Now</a>
                     </div>
                 </div>
             </div>
@@ -49,7 +51,16 @@
             </div>
         </a>
     </div>
-    
+    {% else %}
+    <center>
+        <h2> No offers Available </h2>
+        <br>
+        <br>
+        <div class='text-center'>
+            <a href={% url "product:shoping_page"%} class="btn btn-warning">Countiue Shopping</a>
+        </div>
+        </center>
+    {% endif %}
             </div>
         </div>
         
@@ -59,7 +70,53 @@
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">Category Offers</span></h2>
         </div>
+
+        {% if category_offer_slide %}
+
+        <div id="category-carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                {% for slide in category_offer_slide %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height: 450px;">
+                    <img class="img-fluid" src="{{ slide.category_offer_image.url }}" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 700px;">
+                            <h4 class="text-light text-uppercase font-weight-medium mb-3">Ends On : {{ slide.expire_date }}</h4>
+                            <h5 class="display-4 text-white font-weight-semi-bold mb-4">%{{ slide.discount_percentage }} Offer</h5>
+                            <h3 class="display-4 text-white font-weight-semi-bold mb-4">{{ slide.offer_name }}</h3>
+                           
+                            <a href="{% url 'offers:shop_category_offer' id=slide.id %}" class="btn btn-outline-warning py-2 px-3">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <a class="carousel-control-prev" href="#category-carousel" data-slide="prev">
+                <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                    <span class="carousel-control-prev-icon mb-n2"></span>
+                </div>
+            </a>
+            <a class="carousel-control-next" href="#category-carousel" data-slide="next">
+                <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                    <span class="carousel-control-next-icon mb-n2"></span>
+                </div>
+            </a>
+        </div>
+        {% else %}
+        <center>
+            <h2> No offers Available </h2>
+            <br>
+            <br>
+            <div class='text-center'>
+                <a href={% url "product:shoping_page"%} class="btn btn-warning">Countiue Shopping</a>
+            </div>
+            </center>
+        {% endif %} 
         
+                </div>
+            </div>
+            
+        </div>
+    
     </div>
 
 

@@ -54,7 +54,7 @@
                     {% for cart_item in cart_items %}
                     <tr>
                         <td class="align-middle"><img src="{{ cart_item.product.thambnail.url }}" alt="" style="width: 50px;">{{ cart_item.product.product }}</td>
-                        <td class="align-middle">{{cart_item.product.price}}</td>
+                        <td class="align-middle">{{cart_item.product.product_price}}</td>
                         <td class="align-middle product_data">
                             {% csrf_token %}
                         <div class="input-group input-spinner">
