@@ -59,6 +59,17 @@ def place_order(request):
 
     if request.method == "POST":
         ip = request.META.get('REMOTE_ADDR')
+        discount = 0
+        coupon_code = request.POST.get('coupon')
+        if coupon_code:
+            try:
+                coupon_obj = Coupon.objects.get(coupon_code=coupon_code)
+                grand_total = (total - coupon_obj.discount_price) + tax
+                discount = coupon_obj.discount_price
+                if grand_total < 0:
+                    grand_total = 0
+            except:
+                pass
 
         #generating unique number 
         unique_id = uuid.uuid4().hex[:10]  # Generates a random 10-character hexadecimal string
@@ -80,12 +91,14 @@ def place_order(request):
             )
 
         #order model
+        
         order_object = Order.objects.create(
             user=current_user,
             order_number=order_number,
             shipping_address=address,
             payment=payment_object,
             order_total=grand_total,
+            discount = discount,
             tax=tax,
             ip=ip,
             )
@@ -133,36 +146,91 @@ def place_order(request):
     return redirect('cart:checkout')
 
 
+# def ajax_coupon(request):
+#     if request.method == "POST":
+#         coupon_code = request.POST.get('couponCode')
+#         grand_total = float(request.POST.get('grandTotal'))
+#         sub_total = float(request.POST.get('subTotal'))
+#         tax = float(request.POST.get('tax'))
+#         print("????????????????")
+#         print(coupon_code)
+#         if coupon_code:
+#             try:
+#                 coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
+#                 if sub_total >= coupon.minimium_amount:
+#                     new_grand_total = (sub_total + tax) - coupon.discount_price 
+#                     if new_grand_total < 0:
+#                         new_grand_total = 0
+#                     response_data = {
+#                     'success': True,
+#                     'message': 'Coupon applied successfully!',
+#                     'newGrandTotal':new_grand_total,
+#                 }
+#                     return JsonResponse(response_data)
+#                 else:
+#                     new_grand_total = (sub_total + tax)
+#                     response_data = {
+#                         'success': False,
+#                         'message': '"Oops! Coupon not applied. Please check the code and try again."!',
+#                         'newGrandTotal':new_grand_total,
+#                     }
+#                     return JsonResponse(response_data)
+#             except:
+#                 print("+++++++++")
+#                 new_grand_total = (sub_total + tax)
+#                 response_data = {
+#                 'success': False,
+#                 'newGrandTotal':new_grand_total,
+#                 'message': 'Invalid coupon code. Please try again with a valid code.',
+#                 'error':'Invalid request',
+#             }
+#                 return JsonResponse(response_data, status=400)
+#         else:
+#             new_grand_total = (sub_total + tax)
+#             response_data = {
+#                 'success': False,
+#                 'message': 'Invalid request',
+#                  'newGrandTotal':new_grand_total,
+#             }
+#             return JsonResponse(response_data, status=400)
+
 def ajax_coupon(request):
     if request.method == "POST":
         coupon_code = request.POST.get('couponCode')
-        grand_total = float(request.POST.get('grandTotal'))
-
-        try:
-            coupon = Coupon.objects.get(coupon_code=coupon_code,is_expired=False)
-            if grand_total >= coupon.minimium_amount:
-                new_grand_total = grand_total - coupon.discount_price
-            else:
-                new_grand_total = grand_total
-            response_data = {
-                'success': True,
-                'message': 'Coupon applied successfully!',
-                'newGrandTotal':new_grand_total,
-            }
-            return JsonResponse(response_data)
-        except:
-            response_data = {
-            'success': False,
-            'message': 'Invalid coupon code. Please try again with a valid code.',
-            'error':'Invalid request'
-        }
-            return JsonResponse(response_data, status=400)
-    else:
+        sub_total = float(request.POST.get('subTotal'))
+        tax = float(request.POST.get('tax'))
+        
+        # Initialize new_grand_total with default values
+        new_grand_total = sub_total + tax
+        message = "Not applied"
+        success = False
+        
+        if coupon_code:
+            try:
+                coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
+                if sub_total >= coupon.minimium_amount:
+                    new_grand_total = (sub_total + tax) - coupon.discount_price 
+                    message = "Coupon applied successfully!"
+                    success = True
+                    if new_grand_total < 0:
+                        new_grand_total = 0
+                else:
+                    message = "Oops! Coupon not applied. Please check the code and try again."
+                    success = False
+            except Coupon.DoesNotExist:
+                message = "Invalid coupon code. Please try again with a valid code."
+                success = False
+            if " " in coupon_code:
+                message = "Code doesn't contains space"
+                success = False
+        
         response_data = {
-            'success': False,
-            'message': 'Invalid request',
+            'success': success,
+            'message': message,
+            'newGrandTotal': new_grand_total,
         }
-        return JsonResponse(response_data, status=400)
+        return JsonResponse(response_data)
+    
 
 
 
@@ -217,6 +285,7 @@ def cash_on_delivery(request):
     pay_method = order_object.payment.payment_method
     address = order_object.shipping_address
     tax = order_object.tax
+    discount = order_object.discount
     total =order_object.order_total
     context = {
         'order_products':order_products,
@@ -226,6 +295,7 @@ def cash_on_delivery(request):
         'address':address,
         'tax':tax,
         'total':total,
+        'discount':discount,
     }
     
     return render(request, 'orders/success.html', context)
@@ -234,8 +304,6 @@ def cash_on_delivery(request):
 
 def success (request):
     order_id = request.GET.get('order_id')
-    
-
     current_user = request.user
     pay_id = request.session['pay_id']
     cart_items = CartItem.objects.select_related('cart').filter(user = current_user)

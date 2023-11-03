@@ -70,15 +70,17 @@
         <div class="col-lg-4">
             <!-- coupons code -->
             <div id="coupon-message"></div>
-
-            <form class="mb-5"  method="POST">{% csrf_token %}
-                <div class="input-group">
+            <form action="{% url "orders:place_order" %}" method="POST">
+           {% csrf_token %}
+                <div class="input-group mb-4">
                     <input type="text" class="form-control p-4" placeholder="Coupon Code" name="coupon">
                     <div class="input-group-append">
-                        <button class="btn btn-dark"  id="coupon-apply">Apply Coupon</button>
+                        <button class="btn btn-dark" id="coupon-apply">Apply Coupon</button>
+                        <button class="btn btn-danger" id="remove-coupon" style="display: none;">Remove Coupon</button>
+
                     </div>
                 </div>
-            </form> 
+            
         
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
@@ -97,11 +99,11 @@
                     <hr class="mt-0">
                     <div class="d-flex justify-content-between mb-3 pt-1">
                         <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">{{total}}</h6>
+                        <h6 class="font-weight-medium" id="sub-total">{{total}}</h6>
                     </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="font-weight-medium">Tax</h6>
-                        <h6 class="font-weight-medium">{{tax}}</h6>
+                        <h6 class="font-weight-medium" id="tax-amount">{{tax}}</h6>
                     </div>
                 </div>
                 <div class="card-footer border-secondary bg-transparent">
@@ -111,8 +113,8 @@
                     </div>
                 </div>
             </div>
-            <form action="{% url "orders:place_order" %}" method="POST">
-                {% csrf_token %}
+           
+                {% comment %} {% csrf_token %} {% endcomment %}
             <div class="card border-secondary mb-5">
                 <div class="card-header bg-secondary border-0">
                     <h4 class="font-weight-semi-bold m-0">Payment</h4>
@@ -147,13 +149,17 @@
 <script>
     $(document).ready(function(){
         var token = $('input[name=csrfmiddlewaretoken]').val();
-
+        var initialSubTotal = parseFloat($('#sub-total').text().replace('₹', '').trim()); // Store initial subtotal
+        var initialTax = parseFloat($('#tax-amount').text().replace('₹', '').trim()); // Store initial tax
+        var totalAmount = initialSubTotal + initialTax;
         // handling button click 
         $('#coupon-apply').click(function(e){
             e.preventDefault();
 
             var couponCode = $('input[name=coupon]').val();
             var grandTotal = $('#grand-total').data('grand-total');
+            var subTotal = initialSubTotal; // Use the stored initial subtotal
+            var tax = initialTax; // Use the stored initial tax
            
 
             // making the ajax request to update the cart item quantity
@@ -163,6 +169,8 @@
                 data: {
                     'couponCode':couponCode,
                     'grandTotal':grandTotal,
+                    'subTotal':subTotal,
+                    'tax':tax,
                     'csrfmiddlewaretoken': token,
                 },
                 success:function(data){
@@ -170,10 +178,15 @@
                     $('#grand-total').data('grand-total', data.newGrandTotal);
                     $('#grand-total').text('₹' + data.newGrandTotal);
                     $('#coupon-message').text(data.message).removeClass('text-danger').addClass('text-success');
+                    $('#coupon-apply').hide(); // Hide Apply Coupon button
+                    $('#remove-coupon').show(); // Show Remove Coupon button
+                    
                     console.log(data);
                     }
                     else {
                         // Coupon application failed, show an error message
+                        $('#grand-total').data('grand-total', data.newGrandTotal);
+                        $('#grand-total').text('₹' + data.newGrandTotal);
                         $('#coupon-message').text(data.message).removeClass('text-success').addClass('text-danger');
                     }
                 },
@@ -183,8 +196,19 @@
             })
 
         });
+        $('#remove-coupon').click(function(e){
+            e.preventDefault();
+    
+            // Reset coupon-related fields and show Apply Coupon button
+            $('input[name=coupon]').val('');
+            $('#coupon-message').text('');
+            $('#grand-total').text('₹' + totalAmount);
+            $('#coupon-apply').show();
+            $('#remove-coupon').hide();
+        });
+    });
 
 
-    })
+
 </script>
 {% endblock content %}

@@ -66,6 +66,7 @@ class Order(models.Model):
     order_number = models.CharField(max_length = 100)
     shipping_address = models.ForeignKey(userAddressBook, on_delete=models.SET_NULL, null=True)
     order_total = models.FloatField()
+    discount = models.CharField(max_length = 200, null = True, blank=True )
     tax = models.FloatField()
     status = models.CharField(max_length = 30 , choices = STATUS, default = 'New')
     ip = models.CharField(blank = True, max_length = 20)
