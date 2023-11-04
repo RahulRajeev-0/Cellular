@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import EmptyPage , PageNotAnInteger , Paginator
+from datetime import datetime
 # ---------------------------------- models -----------------------------------
 from offers.models import ProductOffer , CategoryOffer
 from product.models import Product_varients, Product
@@ -9,8 +10,8 @@ from cart.models import WishList
 
 # Create your views here.
 def offers(request):
-    product_offer_slide = ProductOffer.objects.all()
-    category_offer_slide = CategoryOffer.objects.all()
+    product_offer_slide = ProductOffer.objects.filter(expire_date__gte=datetime.now(), is_active=True)
+    category_offer_slide = CategoryOffer.objects.filter(expire_date__gte=datetime.now(), is_active=True)
     context = {
         'product_offer_slide':product_offer_slide,
         'category_offer_slide':category_offer_slide,

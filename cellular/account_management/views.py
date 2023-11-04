@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.shortcuts import HttpResponse
 from django.contrib import messages
-from account_management.models import Account
+from account_management.models import Account , userAddressBook
 from django.contrib.auth import authenticate,login,logout
 from django.core.mail import send_mail
 import random
@@ -232,9 +232,6 @@ def otp_verification(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def forgot_pass_email(request):
-    if request.user.is_authenticated:
-        return redirect ('account_management:index')
-    
     if request.method=='POST':
         forEmail=request.POST.get('email')
         if Account.objects.filter(email=forEmail).exists():
@@ -295,8 +292,6 @@ def resetpassword_valid(request, uidb64, token):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def reset_password(request):
-    if request.user.is_authenticated:
-        return redirect ('account_management:index')
     if request.method=='POST':
         pass1=request.POST.get('password_new')
         pass2=request.POST.get('password_conf')
@@ -311,3 +306,15 @@ def reset_password(request):
             messages.warning(request,"Password do not match !")
             return redirect('account_management:reset_password')
     return render(request,'account_management/reset_password.html')
+
+
+
+    
+def user_profile(request):
+    user = Account.objects.get(email=request.user)
+    addresses = userAddressBook.objects.filter(user=request.user)
+    context = {
+        'user':user,
+        'addresses':addresses,
+    }
+    return render(request, 'account_management/user_profile.html', context)

@@ -1,0 +1,112 @@
+{% extends "account_management/base.html" %}
+
+{% block content %}
+{% load static %}
+
+
+<section >
+    <div class="container py-5">
+      
+  
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+                class="rounded-circle img-fluid" style="width: 150px;">
+              <h5 class="my-3">{{user.user_name}}</h5>
+              <p>profile photo </p>
+              <div class="d-flex justify-content-center mb-2">
+                <button type="button" class="btn btn-outline-warning rounded">Add</button>
+                {% comment %} <button type="button" class="btn btn-outline-primary">Message</button> {% endcomment %}
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-sm-3">
+                        <p class="mb-0">Full Name</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="text-dark mb-0 align-bottom-text">{{user.user_name}}</p>
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn  btn-sm float-right mr-2"><span class="material-symbols-outlined text-warning">
+                            edit
+                            </span></button>
+                    </div>
+                </div>
+                
+              <hr>
+              <div class="row align-items-center">
+                <div class="col-sm-3">
+                  <p class="mb-0">Email</p>
+                </div>
+                <div class="col-sm-8">
+                  <p class="text-dark mb-0 align-bottom-text">{{user.email}}</p>
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn  btn-sm float-right mr-2"><span class="material-symbols-outlined text-warning">
+                        edit
+                    </span></button>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Wallet Money</p>
+                </div>
+                <div class="col-sm-8">
+                  <p class="text-success mb-0">$ 700000</p>
+                </div>
+                </div>
+                <div >
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Phone</p>
+                </div>
+                <div class="col-sm-8">
+                  <p class="text-dark mb-0">+91 {{user.phone_number}}</p>
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn  btn-sm float-right mr-2"><span class="material-symbols-outlined text-warning">
+                        edit
+                        </span></button>
+                    </div>
+                </div>
+                <div >
+              </div>
+              <hr>
+              <div class="row">
+                
+                <div class="col-sm-6">
+                  <a class=" mb-0 btn btn-outline-dark rounded"  href="">Edit Password</a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{% url 'account_management:forgot_pass_email'%}" class="text-dark">Forget Password</a>
+                    </div>
+                </div>
+                <div 
+              </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+         
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+{% endblock content %}
