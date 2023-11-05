@@ -18,7 +18,7 @@ from account_management.models import HomeMainSlide,HomeSubBanner
 from cart.models import Cart , CartItem
 from cart.views import _cart_id
 
-
+from wallet.models import Wallet
 
 
 
@@ -159,7 +159,7 @@ def user_signUp(request):
 
             user=Account.objects.create_user(uname, email, phone, pass1)
             messages.success(request, "OTP Sent to you email !")
-            request.session['email']=email
+            request.session['email'] = email
             try:
                 cart = Cart.objects.get(cart_id = _cart_id(request))
                 is_cart_item_exits = CartItem.objects.filter(cart = cart).exists()
@@ -215,6 +215,7 @@ def otp_verification(request):
          inputed_otp=request.POST.get('otp')
          if str(inputed_otp)==str(request.session['otp_key']):
              login(request,user)
+             Wallet.objects.create(user=request.user)
              return redirect('account_management:index')
          else:
              messages.error(request,'OTP verification failed !')
@@ -313,8 +314,13 @@ def reset_password(request):
 def user_profile(request):
     user = Account.objects.get(email=request.user)
     addresses = userAddressBook.objects.filter(user=request.user)
+    try:
+        wallet_money = Wallet.objects.get(user=user)
+    except:
+        wallet_money = 0
     context = {
         'user':user,
         'addresses':addresses,
+        'wallet_money':wallet_money,
     }
     return render(request, 'account_management/user_profile.html', context)

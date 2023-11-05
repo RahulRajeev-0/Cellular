@@ -16,6 +16,7 @@ from categoryManagement.models import Category
 from orders.models import Order , OrderProduct , Payment
 from orders.models import Coupon 
 from offers.models import ProductOffer, CategoryOffer
+from wallet.models import Wallet , WalletTransaction
 
 # >>>>>>>>>>>>>>>>>> forms <<<<<<<<<<<<<<<<<<<<<< 
 from product.forms import BrandForm,ProductForm,RamForm,ColorForm , Product_varientsForm , ProductVarientImageForm
@@ -463,7 +464,7 @@ def color_edit(request, uid):
 # ====================================== ORDERS ================================================================================================================
 
 def order_listing(request):
-    orders = Order.objects.filter(is_ordered = True)
+    orders = Order.objects.filter(is_ordered = True).order_by('-created_at')
     print(orders)
     context = {
         'orders':orders
@@ -489,6 +490,27 @@ def admin_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancelled by Admin"
     order.save()
+    if order.payment.payment_method == "Razorpay" or order.payment.payment_method == "Razor Pay" or order.wallet_discount != 0:
+         user = order.user
+    # adding the order total amount back to the users wallet 
+         wallet = Wallet.objects.get(user=user)
+         if order.payment.payment_method == "COD":
+            wallet.balance += order.wallet_discount
+            amount = order.wallet_discount 
+         else:
+            wallet.balance += order.order_total + order.wallet_discount - order.discount
+            amount = order.wallet_discount + order.order_total - order.discount
+         wallet.save()
+    # creating transaction details for the returned amount back to the wallet 
+         transaction = WalletTransaction.objects.create(
+        wallet= wallet,
+        transaction_type = 'CREDIT',
+        transaction_detail = str(order.order_number) + "  CANCELLED",
+        amount = amount,
+          )
+         transaction.save()
+
+    # updating the product stock quantity 
     order_products = OrderProduct.objects.filter(order=order)
     for order_product in order_products:
         product = Product_varients.objects.get(uid=order_product.product.uid)
@@ -509,10 +531,32 @@ def admin_order_complete(request,id):
     order.save()
     return redirect('admin_panel:order_listing')
 
+
+
+# function for accepting the user request for returning the product 
+
 def admin_order_returned(request,id):
+    
+    # changing the order status 
     order = Order.objects.get(order_number=id)
     order.status = "Returned"
     order.save()
+    
+    user = order.user
+    # adding the order total amount back to the users wallet 
+    wallet = Wallet.objects.get(user=user)
+    wallet.balance += order.order_total + order.wallet_discount - order.discount
+    wallet.save()
+    # creating transaction details for the returned amount back to the wallet 
+    transaction = WalletTransaction.objects.create(
+        wallet= wallet,
+        transaction_type = 'CREDIT',
+        transaction_detail = str(order.order_number) + "  CANCELLED",
+        amount = order.wallet_discount + order.order_total - order.discount,
+          )
+    transaction.save()
+
+    # add the product quantity back to the stock 
     order_products = OrderProduct.objects.filter(order=order)
     for order_product in order_products:
         product = Product_varients.objects.get(uid=order_product.product.uid)

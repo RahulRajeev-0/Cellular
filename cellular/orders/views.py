@@ -15,7 +15,7 @@ from cart.models import Cart , CartItem
 from orders.models import Order , Payment , OrderProduct , Coupon
 from account_management.models import userAddressBook
 from product.models import Product_varients
-
+from wallet.models import Wallet , WalletTransaction
 # -------------------------- forms ---------------------------------
 
 
@@ -69,7 +69,7 @@ def place_order(request):
                 if grand_total < 0:
                     grand_total = 0
             except:
-                pass
+                discount = 0
 
         #generating unique number 
         unique_id = uuid.uuid4().hex[:10]  # Generates a random 10-character hexadecimal string
@@ -103,6 +103,28 @@ def place_order(request):
             ip=ip,
             )
         order_object.save()
+
+
+    # checking if the user used wallet or not if yes then making the discount 
+        if 'use_wallet' in request.POST:
+            wallet = Wallet.objects.get(user=request.user)
+            wallet_balance = wallet.balance
+            wallet_discount = min(wallet_balance, grand_total)
+            grand_total -= wallet_discount
+            wallet_balance -= wallet_discount
+            order_object.order_total = grand_total
+            order_object.wallet_discount = wallet_discount
+            wallet.balance = wallet_balance
+            order_object.save()
+            wallet.save()
+
+            transaction = WalletTransaction.objects.create(
+                wallet= wallet,
+                transaction_type = 'CREDIT',
+                transaction_detail = str(order_object.order_number) + "  APPLIED",
+                amount = order_object.wallet_discount + order_object.order_total - order_object.discount,
+            )
+            transaction.save()
 
 
         request.session['pay_id']=payment_id
@@ -198,6 +220,7 @@ def ajax_coupon(request):
     if request.method == "POST":
         coupon_code = request.POST.get('couponCode')
         sub_total = float(request.POST.get('subTotal'))
+        grand_total = float(request.POST.get('grandTotal')) 
         tax = float(request.POST.get('tax'))
         
         # Initialize new_grand_total with default values
@@ -208,14 +231,14 @@ def ajax_coupon(request):
         if coupon_code:
             try:
                 coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
-                if sub_total >= coupon.minimium_amount:
+                if grand_total >= coupon.minimium_amount:
                     new_grand_total = (sub_total + tax) - coupon.discount_price 
                     message = "Coupon applied successfully!"
                     success = True
                     if new_grand_total < 0:
                         new_grand_total = 0
                 else:
-                    message = "Oops! Coupon not applied. Please check the code and try again."
+                    message = "Oops! Coupon not applied. Does not meet the minimum amount ."
                     success = False
             except Coupon.DoesNotExist:
                 message = "Invalid coupon code. Please try again with a valid code."
@@ -362,7 +385,7 @@ def success (request):
 # -------------------------------  user order listing  -------------------------------
 
 def order_listing_user(request):
-    orders = Order.objects.filter(user=request.user, is_ordered=True)
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     
     context = {
         'orders':orders,
@@ -397,6 +420,27 @@ def user_order_cancel(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Cancel"
     order.save()
+    # add money to wallet 
+    if order.payment.payment_method == "Razorpay" or order.payment.payment_method == "Razor Pay" or order.wallet_discount != 0:
+         user = order.user
+    # adding the order total amount back to the users wallet 
+         wallet = Wallet.objects.get(user=user)
+         if order.payment.payment_method == "COD":
+            wallet.balance += order.wallet_discount
+            amount = order.wallet_discount
+         else:
+            wallet.balance += order.order_total + order.wallet_discount - order.discount
+            amount = order.order_total + order.wallet_discount - order.discount
+         wallet.save()
+    # creating transaction details for the returned amount back to the wallet 
+         transaction = WalletTransaction.objects.create(
+        wallet= wallet,
+        transaction_type = 'CREDIT',
+        transaction_detail = str(order.order_number) + "  CANCELLED",
+        amount = amount,
+          )
+         transaction.save()
+
     order_products = OrderProduct.objects.filter(order=order)
     for order_product in order_products:
         product = Product_varients.objects.get(uid=order_product.product.uid)

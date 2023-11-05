@@ -145,7 +145,7 @@
                     </div>
                     
                     <div class="h-25 pt-4">
-                        {% if order.status != "Completed" and order.status != "Return" and order.status != "Returned" %}
+                        {% if order.status != "Completed" and order.status != "Return" and order.status != "Returned" and order.status != "Cancelled by Admin" %}
                         <a href="{% url "admin_panel:admin_order_cancel" id=order.order_number %}" class="btn btn-warning">Cancel Order</a>
                         {% endif %}
                         {% if order.status == "New" %}

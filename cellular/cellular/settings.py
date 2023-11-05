@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'categoryManagement',
     'orders',
     'offers',
+    'wallet',
     
 ]
 

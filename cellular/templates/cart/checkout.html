@@ -70,6 +70,7 @@
         <div class="col-lg-4">
             <!-- coupons code -->
             <div id="coupon-message"></div>
+            
             <form action="{% url "orders:place_order" %}" method="POST">
            {% csrf_token %}
                 <div class="input-group mb-4">
@@ -105,6 +106,18 @@
                         <h6 class="font-weight-medium">Tax</h6>
                         <h6 class="font-weight-medium" id="tax-amount">{{tax}}</h6>
                     </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="use_wallet" id="useWalletCheckbox">
+                            <label class="form-check-label" for="useWalletCheckbox">
+                                Use Wallet
+                            </label>
+                        </div>
+                        
+                      <!-- Add this <div> element where you want to display wallet application messages -->
+
+
+                    
                 </div>
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
@@ -206,6 +219,40 @@
             $('#coupon-apply').show();
             $('#remove-coupon').hide();
         });
+
+        $('#useWalletCheckbox').change(function() {
+            var isChecked = $(this).prop("checked");
+            var grandTotal = parseFloat($('#grand-total').data('grand-total'));
+            
+            if (isChecked) {
+                // User wants to use wallet, make AJAX request to update the grand total
+                $.ajax({
+                    method: "POST",
+                    url: '{% url "wallet:apply_wallet" %}',
+                    data: {
+                        'grandTotal': grandTotal,
+                        'csrfmiddlewaretoken': token,
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            $('#grand-total').data('grand-total', data.newGrandTotal);
+                            $('#grand-total').text('₹' + data.newGrandTotal);
+                        } else {
+                            // Handle error scenario if needed
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            } else {
+                // User unchecked the checkbox, reset the grand total to the original value
+                $('#grand-total').data('grand-total', totalAmount);
+                $('#grand-total').text('₹' + totalAmount);
+            }
+        });
+        
+        
     });
 
 
