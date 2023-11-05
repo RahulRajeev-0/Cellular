@@ -9,7 +9,8 @@ from django.contrib.auth.models import AbstractBaseUser , BaseUserManager ,Permi
 from PIL import Image     #for maintaining aspect ratio 
 
 
-
+import random
+import string
 
 
 
@@ -17,6 +18,11 @@ from PIL import Image     #for maintaining aspect ratio
 
 #custom manager for Account model
 class CustomAccountManager(BaseUserManager):
+
+    def generate_referral_code(self):
+        # Generate a random 6-character alphanumeric code
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
 
     def create_superuser(self, user_name, email, phone_number, password ,**other_fields):
         other_fields.setdefault('is_active', True)
@@ -40,10 +46,12 @@ class CustomAccountManager(BaseUserManager):
     def create_user(self, user_name, email, phone_number, password, **other_fields):
         email = self.normalize_email(email)
         other_fields.setdefault('is_active', True)
+        referral_code = self.generate_referral_code() 
         user=self.model(
             user_name=user_name, 
             email = email, 
             phone_number = phone_number,
+            referral_code=referral_code,
             **other_fields
             )
         user.set_password(password)
@@ -68,7 +76,7 @@ class Account(AbstractBaseUser,PermissionsMixin):
     user_name = models.CharField(max_length = 50 , null = False)
     email = models.EmailField(unique = True)
     phone_number = models.CharField(max_length = 12)
-
+    referral_code = models.CharField(max_length=10, unique=True, blank=True, null=True)
     #required field 
     date_joined = models.DateTimeField(auto_now_add = True)
     is_admin = models.BooleanField(default = False)

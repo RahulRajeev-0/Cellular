@@ -5,6 +5,7 @@ from account_management.models import Account , userAddressBook
 from django.contrib.auth import authenticate,login,logout
 from django.core.mail import send_mail
 import random
+import string
 from django.views.decorators.cache import cache_control
 
 
@@ -98,6 +99,9 @@ def user_signUp(request):
         phone=request.POST.get('phone_no')
         pass1=request.POST.get('passw1')
         pass2=request.POST.get('passw2')
+        refferal_code = request.POST.get('refferal_code')
+        print("++++++++++++++++++++++++")
+        print(refferal_code)
         user=Account.objects.all()
         print(user)
         if uname and email and phone and pass1 and pass2 :
@@ -154,12 +158,33 @@ def user_signUp(request):
             if len(pass1) < 8:
                 messages.warning(request, "Password must contains atleast 8 characters")
                 return redirect('account_management:user_signUp')
+
             else:
                 pass
+            if " " in pass1:
+                messages.warning(request, "Blank space is not allowed in password")
+                return redirect('account_management:user_signUp')
 
             user=Account.objects.create_user(uname, email, phone, pass1)
+            Wallet.objects.create(user=user)
             messages.success(request, "OTP Sent to you email !")
             request.session['email'] = email
+
+            # code for applying refferal offers 
+            if refferal_code:
+                try:
+                    reffer = Account.objects.get(referral_code=refferal_code)
+                    try:
+                        user_wallet = Wallet.objects.get(user=reffer)
+                        user_wallet.balance += 250
+                        user_wallet.save()
+                    except:
+                        pass
+                    user_wallet = Wallet.objects.get(user=user)
+                    user_wallet.balance += 200
+                    user_wallet.save()
+                except:
+                    messages.info(request,"Invalid refferal Code")
             try:
                 cart = Cart.objects.get(cart_id = _cart_id(request))
                 is_cart_item_exits = CartItem.objects.filter(cart = cart).exists()
@@ -171,6 +196,7 @@ def user_signUp(request):
             except:
                 pass
             return redirect('account_management:otp_generation')
+        
 
     return render(request,'account_management/user_signUp.html')
 
@@ -215,7 +241,6 @@ def otp_verification(request):
          inputed_otp=request.POST.get('otp')
          if str(inputed_otp)==str(request.session['otp_key']):
              login(request,user)
-             Wallet.objects.create(user=request.user)
              return redirect('account_management:index')
          else:
              messages.error(request,'OTP verification failed !')
