@@ -1,0 +1,36 @@
+{% extends "account_management/base.html" %}
+
+{% block content %}
+{% load static %}
+{% comment %} <div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
+        <h1 class="font-weight-semi-bold text-dark text-uppercase mb-3">Our Shop</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href=""class='text-dark'>Home</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0 text-dark">Shop</p>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+
+
+<div class="card text-center mx-auto d-inline-block">
+    <div class="card-header bg-dark text-white">
+        Wallet
+    </div>
+    <div class="card-body">
+        <p>Hello , {{user.user_name}} . </p>
+        <p>------------------------------------------------------------</p>
+        <h5 class="card-title text-dark">Wallet Balance = $  <b class="text-success"> {{wallet_money.balance}} </b> </h5>
+        <p class="card-text text-dark">Refferal Code : <b class="text-danger">{{user.referral_code}}</b> </p>
+        {% comment %} <a href="#" class="btn btn-outline-warning rounded">Go somewhere</a> {% endcomment %}
+    </div>
+    <div class="card-footer text-body-secondary">
+        
+    </div>
+</div>
+
+
+
+{% endblock content %}

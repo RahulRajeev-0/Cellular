@@ -1,7 +1,12 @@
 from django.shortcuts import render
-from wallet.models import Wallet
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+
+
+# ----------------- MODELS ----------------
+from wallet.models import Wallet
+from account_management.models import Account
+
 
 # Create your views here.
 
@@ -30,3 +35,16 @@ def apply_wallet(request):
         return JsonResponse(response_data)
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    
+
+def wallet_page(request):
+    user = Account.objects.get(email=request.user)
+    try:
+        wallet_money = Wallet.objects.get(user=user)
+    except:
+        wallet_money = 0
+    context = {
+        'user':user,
+        'wallet_money':wallet_money,
+    }
+    return render(request, "account_management/wallet.html", context)

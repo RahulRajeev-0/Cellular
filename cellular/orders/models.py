@@ -9,7 +9,7 @@ from product.models import Product , Product_varients
 
 class Coupon(models.Model):
     coupon_code = models.CharField(max_length=10)
-    expiration_date = models.DateField(blank=True,null=True)
+    expiration_date = models.DateField(null=True)
     is_expired = models.BooleanField(default=False)
     discount_price = models.IntegerField(default=100)
     minimium_amount = models.IntegerField(default=5000)

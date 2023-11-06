@@ -230,7 +230,7 @@ def ajax_coupon(request):
         
         if coupon_code:
             try:
-                coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False)
+                coupon = Coupon.objects.get(coupon_code=coupon_code, is_expired=False, expiration_date__gte=datetime.now())
                 if grand_total >= coupon.minimium_amount:
                     new_grand_total = (sub_total + tax) - coupon.discount_price 
                     message = "Coupon applied successfully!"

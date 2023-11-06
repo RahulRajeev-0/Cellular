@@ -166,9 +166,12 @@ def user_signUp(request):
                 return redirect('account_management:user_signUp')
 
             user=Account.objects.create_user(uname, email, phone, pass1)
+            user.is_active = False
+            user.save()
             Wallet.objects.create(user=user)
             messages.success(request, "OTP Sent to you email !")
             request.session['email'] = email
+            # request.session['refferal_code'] = refferal_code
 
             # code for applying refferal offers 
             if refferal_code:
@@ -240,6 +243,8 @@ def otp_verification(request):
      if request.method=="POST":
          inputed_otp=request.POST.get('otp')
          if str(inputed_otp)==str(request.session['otp_key']):
+             user.is_active = True
+             user.save()
              login(request,user)
              return redirect('account_management:index')
          else:
