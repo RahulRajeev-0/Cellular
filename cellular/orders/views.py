@@ -429,8 +429,8 @@ def user_order_cancel(request,id):
             wallet.balance += order.wallet_discount
             amount = order.wallet_discount
          else:
-            wallet.balance += order.order_total + order.wallet_discount - order.discount
-            amount = order.order_total + order.wallet_discount - order.discount
+            wallet.balance += order.order_total + order.wallet_discount - float(order.discount)
+            amount = order.order_total + order.wallet_discount - float(order.discount)
          wallet.save()
     # creating transaction details for the returned amount back to the wallet 
          transaction = WalletTransaction.objects.create(
@@ -458,7 +458,7 @@ def user_order_return(request,id):
     order = Order.objects.get(order_number=id)
     order.status = "Return"
     order.save()
-    return redirect("orders:order_listing_user", id=order.order_number)
+    return redirect("orders:order_listing_user")
 
 
 

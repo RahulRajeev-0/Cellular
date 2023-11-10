@@ -498,8 +498,8 @@ def admin_order_cancel(request,id):
             wallet.balance += order.wallet_discount
             amount = order.wallet_discount 
          else:
-            wallet.balance += order.order_total + order.wallet_discount - order.discount
-            amount = order.wallet_discount + order.order_total - order.discount
+            wallet.balance += order.order_total + order.wallet_discount - float(order.discount)
+            amount = order.wallet_discount + order.order_total - float(order.discount)
          wallet.save()
     # creating transaction details for the returned amount back to the wallet 
          transaction = WalletTransaction.objects.create(
@@ -545,14 +545,14 @@ def admin_order_returned(request,id):
     user = order.user
     # adding the order total amount back to the users wallet 
     wallet = Wallet.objects.get(user=user)
-    wallet.balance += order.order_total + order.wallet_discount - order.discount
+    wallet.balance += order.order_total + order.wallet_discount - float(order.discount)
     wallet.save()
     # creating transaction details for the returned amount back to the wallet 
     transaction = WalletTransaction.objects.create(
         wallet= wallet,
         transaction_type = 'CREDIT',
         transaction_detail = str(order.order_number) + "  CANCELLED",
-        amount = order.wallet_discount + order.order_total - order.discount,
+        amount = order.wallet_discount + order.order_total - float(order.discount),
           )
     transaction.save()
 

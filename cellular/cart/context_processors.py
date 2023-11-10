@@ -17,3 +17,13 @@ def counter(request):
 
     return dict(cart_count = cart_count)
 
+
+
+from .models import WishList
+
+def wishlist_count(request):
+    if request.user.is_authenticated:
+        wishlist_count = WishList.objects.filter(user=request.user).count()
+    else:
+        wishlist_count = 0
+    return {'wishlist_count': wishlist_count}
