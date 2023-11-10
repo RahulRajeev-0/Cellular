@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$@%%16zp109lda@z+i7r&yvk9e-!7xthusruzg0+2u#%(g)gg('
+# SECRET_KEY = 'django-insecure-$@%%16zp109lda@z+i7r&yvk9e-!7xthusruzg0+2u#%(g)gg('
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG',default=False,cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -87,9 +90,9 @@ WSGI_APPLICATION = 'cellular.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':  'cellular',
-        'USER': 'postgres',
-        'PASSWORD': 'rahul',
+        "NAME": config('NAME'),
+        "USER": config('USER'),
+        "PASSWORD": config('PASSWORD'),
         'HOST': 'localhost',
         'POST':'5432'
 
@@ -121,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -150,17 +153,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Email Setting 
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT='587'
-EMAIL_HOST_USER='ravanan0908@gmail.com'
-EMAIL_HOST_PASSWORD='qsyz duay caoi wuir'
-EMAIL_USE_TLS=True
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+
 
 
 
 ##################################
 
 # ---------- RAZORPAY -------------
-KEY = 'rzp_test_p2yR17LcMZzs05'
-SECRET = 'KtwqhbWF7ezocTFOy3c2e2M6'
-SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+KEY = config('KEY')
+SECRET = config('SECRET')
+SECURE_CROSS_ORIGIN_OPENER_POLICY = config('SECURE_CROSS_ORIGIN_OPENER_POLICY')
