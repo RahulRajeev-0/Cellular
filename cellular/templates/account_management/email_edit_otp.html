@@ -22,7 +22,7 @@
                         <div class="mb-md-5 mt-md-4 pb-5">
       
                         <h2 class="fw-bold mb-2"><img src="{% static "/img/logo.jpg" %}" width="50" height="50">Cellular</h2>
-                        <p class="text-dark mb-5">Forgot password </p>
+                        <p class="text-dark mb-5">Please enter your OTP!</p>
                             
                 <!-- ======================message =================================== -->
                 {% for message in messages  %}
@@ -37,18 +37,22 @@
 
                 <!--============================= form ======================================-->           
                 
-                <form method=POST action="{% url "account_management:forgot_pass_email" %}">
+                <form method=POST action="{% url "account_management:otp_verification_edit_email" %}">
                     {% csrf_token %}
                         <div class="form-outline form-white mb-4">
-                        <input type="Email" id="typeEmailX" name='email' class="form-control form-control-lg" />
-                        <label class="form-label fond-weight-bolder text-dark " for="typeEmailX">Plese enter your Email Id</label>
+                        <input type="Number" id="typeEmailX" name='otp' class="form-control form-control-lg" />
+                        <label class="form-label fond-weight-bolder text-dark " for="typeEmailX">OTP</label>
                         </div>
       
                         <button class="btn btn-outline-warning fond-weight-bolder btn-lg px-5" type="submit">Verify</button>
                 
                         </div>
                 </form>   
-                    
+                    {% comment %} <div>
+                    <p class="mb-0">Do you want to resent OTP ? <a href="#!" class="text-warning fw-bold">Resent</a>
+                    </p>
+                  </div>  {% endcomment %}
+      
                 </div>
               </div>
             </div>

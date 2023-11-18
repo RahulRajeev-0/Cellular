@@ -20,7 +20,7 @@ from cart.models import Cart , CartItem
 from cart.views import _cart_id
 
 from wallet.models import Wallet
-
+from django.http import JsonResponse
 
 
 
@@ -116,6 +116,13 @@ def user_signUp(request):
                 pass
 
             try:
+                if " " in uname:
+                    messages.warning(request,"User can't include blank space")
+                    return redirect('account_management:user_signUp')
+            except:
+                pass
+
+            try:
                 if Account.objects.get(user_name = uname):
                     messages.warning(request, 'Username already exist')
                     return redirect('account_management:user_signUp')
@@ -150,6 +157,13 @@ def user_signUp(request):
                 pass
 
             #code for checking the password 
+            try:
+                if " " in pass1:
+                    messages.warning(request, "Blank space is not allowed in password")
+                    return redirect('account_management:user_signUp')
+            except:
+                pass
+
             if pass1 != pass2:
                 messages.warning(request, "Passwords do not match. Please make sure the password and confirm password fields are identical")
                 return redirect('account_management:user_signUp')
@@ -161,10 +175,7 @@ def user_signUp(request):
 
             else:
                 pass
-            if " " in pass1:
-                messages.warning(request, "Blank space is not allowed in password")
-                return redirect('account_management:user_signUp')
-
+            
             user=Account.objects.create_user(uname, email, phone, pass1)
             user.is_active = False
             user.save()
@@ -354,3 +365,113 @@ def user_profile(request):
         'wallet_money':wallet_money,
     }
     return render(request, 'account_management/user_profile.html', context)
+
+
+
+
+
+def update_username(request):
+    if request.method == 'POST':
+        print("++++++++++++++++++++++++++++++++++++")
+        new_uname = request.POST.get('new_uname')
+
+        try:
+            if len(new_uname)<=2:
+                return JsonResponse({'status': 'error', 'message': 'Username must contain at least 3 letters'})
+        except:
+            pass
+
+        try:
+            if " " in new_uname:
+                return JsonResponse({'status': 'error', 'message': "User can't include blank space"})
+        except:
+            pass
+
+        try:
+            user_profile = Account.objects.get(email=request.user)
+            user_profile.user_name = new_uname
+            user_profile.save()
+            return JsonResponse({'status':'success','message': 'Username updated successfully'})
+        except:
+             return JsonResponse({'status': 'error', 'message': 'User profile not found'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    
+
+
+def update_phone(request):
+    if request.method == "POST":
+        try:
+            new_number = request.POST.get('new_phone')
+
+            if len(new_number) < 10 or len(new_number) > 12 or not new_number.isdigit():
+                return JsonResponse({'status': 'error', 'message': 'Enter a valid phone number'})
+            
+            user_profile = Account.objects.get(email=request.user)  # Replace with your user profile model or how you store user data
+            user_profile.phone_number = new_number
+            user_profile.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Phone number updated successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+
+
+
+
+
+def update_email(request):
+    if request.method == "POST":
+        try:
+            new_email = request.POST.get('new_email')
+
+            if ' ' in new_email or '.com' not in new_email:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'invalid email',
+                })
+
+            otp_number = random.randint(1000, 9999)
+            request.session['otp_key'] = otp_number
+            request.session['new_email'] = new_email
+
+            send_mail(
+                "OTP VERIFICATION CELLULAR ",
+                f"OTP = {otp_number}",
+                "ravanan0908@gmail.com",
+                [new_email],
+                fail_silently=False,
+            )
+
+            print("Before rendering email_edit_otp.html")
+            return render(request, 'account_management/email_edit_otp.html')
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+
+
+
+
+def otp_verification_edit_email(request):
+     
+     user=Account.objects.get(email=request.user)
+     if request.method=="POST":
+         inputed_otp=request.POST.get('otp')
+         if str(inputed_otp)==str(request.session['otp_key']):
+             user.email = request.session['new_email']
+             user.save()
+             login(request,user)
+             return redirect('account_management:user_profile')
+         else:
+             messages.error(request,'OTP verification failed !')
+             return redirect('account_management:otp_verification_edit_email')
+    
+     return render(request,'account_management/email_edit_otp.html')

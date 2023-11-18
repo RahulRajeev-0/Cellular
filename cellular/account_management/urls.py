@@ -17,4 +17,10 @@ urlpatterns = [
     path('reset_password/',views.reset_password,name='reset_password'),
     path('user_profile/', views.user_profile, name='user_profile'),
 
+
+    path('update_username/', views.update_username, name='update_username'),
+    path('update_phone/', views.update_phone, name='update_phone'),
+    path('update_email/', views.update_email, name='update_email'),
+    path('otp_verification_edit_email/', views.otp_verification_edit_email, name='otp_verification_edit_email'),
+
 ]

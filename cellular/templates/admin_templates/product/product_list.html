@@ -11,9 +11,7 @@
             <h2 class="content-title card-title">Product List </h2>
             
         </div>
-        {% comment %} <div>
-            <input type="text" placeholder="Search order ID" class="form-control bg-white">
-        </div> {% endcomment %}
+        
     </div>
     <div class="card mb-4">
         <header class="card-header">
@@ -51,8 +49,7 @@
                             <th scope="col" class="text-end">Edit</th>
                             
                           
-                            {% comment %} <th scope="col">Date</th> {% endcomment %}
-                            {% comment %} <th scope="col" class="text-end"> Action </th> {% endcomment %}
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -79,22 +76,7 @@
                             
                             
                            
-                            {% comment %} <td class="text-end">
-                                {% if user.is_active%}
-                                <a href="{% url "admin_panel:user_block_unblock" id=user.id %}" class="btn btn-md bg-danger font-sm">Block</a>
-                                {% else %}
-                                <a href="{% url "admin_panel:user_block_unblock" id=user.id %}" class="btn btn-md bg-success font-sm">UnBlock</a>
-                                {% endif %}
-
-                                <div class="dropdown">
-                                    <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#">View detail</a>
-                                        <a class="dropdown-item" href="#">Edit info</a>
-                                        <a class="dropdown-item text-danger" href="#">Delete</a>
-                                    </div>
-                                </div> <!-- dropdown //end -->
-                            </td> {% endcomment %}
+                           
                         </tr>
                         {% endfor %}
                     </tbody>

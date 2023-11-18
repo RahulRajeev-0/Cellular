@@ -3,6 +3,8 @@
 {% block content %}
 {% load static %}
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 
 <section >
     <div class="container py-5">
@@ -27,7 +29,7 @@
         <div class="col-lg-8">
           <div class="card mb-4">
             <div class="card-body">
-                <div class="row align-items-center">
+                {% comment %} <div class="row align-items-center">
                     <div class="col-sm-3">
                         <p class="mb-0">Full Name</p>
                     </div>
@@ -39,22 +41,30 @@
                             edit
                             </span></button>
                     </div>
+                </div> {% endcomment %}
+                <label>user name </label>
+                <div class="input-group mb-4">
+                  <input type="text" class="form-control p-4" placeholder="{{user.user_name}}" id="new-uname" name="new_uname">
+                  <div class="input-group-append">
+                      <button class="btn btn-dark rounded" id="edit-uname">
+                    <span class="material-symbols-outlined">edit</span>
+                      </button>
+                  <button class="btn btn-success rounded" id="save-uname" style="display: none;">Save</button>
                 </div>
-                
+                </div>
               <hr>
-              <div class="row align-items-center">
-                <div class="col-sm-3">
-                  <p class="mb-0">Email</p>
-                </div>
-                <div class="col-sm-8">
-                  <p class="text-dark mb-0 align-bottom-text">{{user.email}}</p>
-                </div>
-                <div class="col-sm-1">
-                    <button class="btn  btn-sm float-right mr-2"><span class="material-symbols-outlined text-warning">
-                        edit
-                    </span></button>
-                </div>
-              </div>
+              <label>Email </label>
+<div class="input-group mb-4">
+    <input type="text" class="form-control p-4" placeholder="{{user.email}}" id="new-email" name="new_email">
+    <div class="input-group-append">
+        <button class="btn btn-dark rounded" id="edit-email">
+            <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button class="btn btn-danger" id="remove-coupon" style="display: none;">Remove Coupon</button>
+        <button class="btn btn-success" id="save-email" style="display: none;">Save</button>
+    </div>
+</div>
+
               <hr>
               <div class="row">
                 <div class="col-sm-3">
@@ -78,21 +88,17 @@
                 <div >
               </div>
               <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Phone</p>
-                </div>
-                <div class="col-sm-8">
-                  <p class="text-dark mb-0">+91 {{user.phone_number}}</p>
-                </div>
-                <div class="col-sm-1">
-                    <button class="btn  btn-sm float-right mr-2"><span class="material-symbols-outlined text-warning">
-                        edit
-                        </span></button>
-                    </div>
-                </div>
-                <div >
-              </div>
+              <label>Phone </label>
+<div class="input-group mb-4">
+    <input type="text" class="form-control p-4" placeholder="{{user.phone_number}}" id="new-phone" name="new_phone">{% csrf_token %}
+    <div class="input-group-append">
+        <button class="btn btn-dark rounded" id="edit-phone">
+            <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button class="btn btn-danger" id="remove-coupon" style="display: none;">Remove Coupon</button>
+        <button class="btn btn-success" id="save-phone" style="display: none;">Save</button>
+    </div>
+</div>
               <hr>
               <div class="row">
                 
@@ -116,6 +122,126 @@
   </section>
 
 
+  <script>
+    $(document).ready(function () {
+
+      var token = $('input[name=csrfmiddlewaretoken]').val();
+      // Function to set the initial state
+      function setInitialState(inputId, editBtnId, saveBtnId) {
+        $(inputId).prop('disabled', true); // Disable the input field
+        $(saveBtnId).hide(); // Hide the save button
+        $(editBtnId).show(); // Show the edit button
+    }
+
+    // Set initial state for each section
+    setInitialState('#new-uname', '#edit-uname', '#save-uname');
+    setInitialState('#new-email', '#edit-email', '#save-email');
+    setInitialState('#new-phone', '#edit-phone', '#save-phone');
+
+
+        // Edit button click event for user name
+        $('#edit-uname').on('click', function () {
+            $('#new-uname').prop('disabled', false); // Enable the input field
+            $(this).hide(); // Hide the edit button
+            $('#save-uname').show(); // Show the save button
+        });
+
+        // Save button click event for user name
+        $('#save-uname').on('click', function () {
+            var newUname = $('#new-uname').val();
+
+            // Perform AJAX request to update the user's name
+            $.ajax({
+                type: 'POST', // or 'PUT' depending on your backend implementation
+                url: '{% url "account_management:update_username" %}', // Replace with your backend endpoint
+                data: { 'new_uname': newUname,
+                'csrfmiddlewaretoken': token
+               },
+                success: function (response) {
+                    // Handle success, e.g., show a success message
+                    console.log(response);
+                },
+                error: function (error) {
+                    // Handle error, e.g., show an error message
+                    console.log(error);
+                },
+                complete: function () {
+                    $('#new-uname').prop('disabled', true); // Disable the input field
+                    $('#save-uname').hide(); // Hide the save button
+                    $('#edit-uname').show(); // Show the edit button
+                }
+            });
+        });
+
+        // Edit button click event for email
+        $('#edit-email').on('click', function () {
+            $('#new-email').prop('disabled', false); // Enable the input field
+            $(this).hide(); // Hide the edit button
+            $('#save-email').show(); // Show the save button
+        });
+
+        // Save button click event for email
+        $('#save-email').on('click', function () {
+            var newEmail = $('#new-email').val();
+
+            // Perform AJAX request to update the user's email
+            $.ajax({
+                type: 'POST', // or 'PUT' depending on your backend implementation
+                url: '{% url "account_management:update_email" %}', // Replace with your backend endpoint for email update
+                data: { 'new_email': newEmail,
+                'csrfmiddlewaretoken': token
+                       },
+                success: function (response) {
+                    // Handle success, e.g., show a success message
+                    console.log(response);
+                },
+                error: function (error) {
+                    // Handle error, e.g., show an error message
+                    console.log(error);
+                },
+                complete: function () {
+                    $('#new-email').prop('disabled', true); // Disable the input field
+                    $('#save-email').hide(); // Hide the save button
+                    $('#edit-email').show(); // Show the edit button
+                }
+            });
+        });
+
+        // Edit button click event for phone
+        $('#edit-phone').on('click', function () {
+            $('#new-phone').prop('disabled', false); // Enable the input field
+            $(this).hide(); // Hide the edit button
+            $('#save-phone').show(); // Show the save button
+        });
+
+        // Save button click event for phone
+        $('#save-phone').on('click', function () {
+            var newPhone = $('#new-phone').val();
+
+            // Perform AJAX request to update the user's phone number
+            $.ajax({
+                type: 'POST', // or 'PUT' depending on your backend implementation
+                url: '{% url "account_management:update_phone" %}', // Replace with your backend endpoint for phone number update
+                data: { 'new_phone': newPhone,
+                'csrfmiddlewaretoken': token
+              },
+                success: function (response) {
+                    // Handle success, e.g., show a success message
+                    console.log(response);
+                },
+                error: function (error) {
+                    // Handle error, e.g., show an error message
+                    console.log(error);
+                },
+                complete: function () {
+                    $('#new-phone').prop('disabled', true); // Disable the input field
+                    $('#save-phone').hide(); // Hide the save button
+                    $('#edit-phone').show(); // Show the edit button
+                }
+            });
+        });
+    });
+</script>
 
 
 
