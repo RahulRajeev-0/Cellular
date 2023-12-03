@@ -38,9 +38,10 @@ from orders.forms import CouponForm
 # --------------------------------------- function for rendering admin home page  ------------------------------------
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def admin_index (request):
-    if 'email' not in request.session:
+    if not request.user.is_superuser:
         return redirect ('admin_panel:admin_login')
-    return render(request,'admin_templates/admin_index.html') 
+    else:
+        return render(request,'admin_templates/admin_index.html') 
 
 
 
@@ -48,8 +49,8 @@ def admin_index (request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def admin_login(request):
-    if 'email' in request.session:
-        return redirect ('admin_panel:admin_index')
+    if request.user.is_authenticated and request.user.is_superuser:
+        return redirect ("admin_panel:admin_index")
     if request.method=='POST':
             ademail=request.POST.get("email")
             passw=request.POST.get('password')
@@ -75,7 +76,7 @@ def admin_login(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_listing(request):
-     if 'email' not in request.session:
+     if not request.user.is_superuser:
         return redirect ('admin_panel:admin_login')
      users=Account.objects.all()
      context={'users':users}
@@ -88,6 +89,8 @@ def user_listing(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def user_block_unblock(request,id):
+        if not request.user.is_superuser:
+            return redirect ('admin_panel:admin_login')
         user=Account.objects.get(id=id)
         if user.is_active:
             user.is_active=False
@@ -105,8 +108,8 @@ def user_block_unblock(request,id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def brand_list(request):
-     if 'email' not in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+            return redirect ('admin_panel:admin_login')
      # if 'emial' not in request.session:
      #    return redirect ('admin_panel:admin_login')
      brands=Brand.objects.all()
@@ -120,8 +123,8 @@ def brand_list(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def add_brand(request):
-     if 'email' not in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+          return redirect ('admin_panel:admin_login')
      if request.method=='POST':
           form=BrandForm(request.POST)
           if form.is_valid():
@@ -138,6 +141,8 @@ def add_brand(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def block_unblock_brand(request,id):
+     if not request.user.is_superuser:
+          return redirect ('admin_panel:admin_login')
      brand=Brand.objects.get(id=id)
      if brand.is_active:
           brand.is_active=False
@@ -155,8 +160,8 @@ def block_unblock_brand(request,id):
 # ------------------------   function for editing brand -----------------------------------------------
 
 def brand_edit(request,id):
-     if 'email' not  in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+          return redirect ('admin_panel:admin_login')
      brand = get_object_or_404(Brand, id=id)
     
      if request.method == 'POST':
@@ -178,8 +183,8 @@ def brand_edit(request,id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def product_listing(request):
-     if 'email' not in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+            return redirect ('admin_panel:admin_login')
      products=Product.objects.all()
      context={'products':products}
      return render(request,'admin_templates/product/product_list.html',context)
@@ -188,8 +193,8 @@ def product_listing(request):
 
 
 def product_edit(request, uid):
-     if 'email' not  in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+          return redirect ('admin_panel:admin_login')
      product = get_object_or_404(Product, uid = uid)
     
      if request.method == 'POST':
@@ -206,8 +211,8 @@ def product_edit(request, uid):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def add_product(request):
-    if 'email' not in request.session:
-        return redirect('admin_panel:admin_login')
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -228,14 +233,16 @@ def add_product(request):
 # fucntion to list the varient of product 
 
 def product_varients_listing(request):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     varients = Product_varients.objects.all()
     context = {'varients':varients}
     return render (request, 'admin_templates/product/varients_listing.html',context)
 
 
 def product_varients_edit(request, uid):
-    if 'email' not in request.session :
-        return redirect ('admin_panel:admin_login')
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     
     product_varient = get_object_or_404(Product_varients, uid = uid)
 
@@ -265,8 +272,8 @@ def product_varients_edit(request, uid):
 # fucntion to add product varients 
 
 def product_varients_add(request):
-    if 'email' not in request.session :
-        return redirect ('admin_panel:admin_login')
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     if request.method == "POST" :
         form = Product_varientsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -290,10 +297,14 @@ def product_varients_add(request):
 
 
 def product_images(request):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     images = ProductImage.objects.all()
     return render (request, 'admin_templates/product/product_images.html', {"images":images})
 
 def product_img_add(request):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = ProductVarientImageForm(request.POST , request.FILES)
         if form.is_valid():
@@ -308,6 +319,8 @@ def product_img_add(request):
 
 
 def product_img_delete(request, uid):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     try:
         img_to_delete = ProductImage.objects.get(uid=uid)
         img_to_delete.delete()
@@ -321,8 +334,8 @@ def product_img_delete(request, uid):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home_main_slider(request):
-     if 'email' not in request.session:
-         return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+          return redirect ('admin_panel:admin_login')
      if request.method=='POST':
           form=HomeMainSliderForm(request.POST, request.FILES)
           if form.is_valid():
@@ -343,6 +356,8 @@ def home_main_slider(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def delete_slide(request, slide_id):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     try:
         slide_to_delete = HomeMainSlide.objects.get(pk=slide_id)
         slide_to_delete.delete()
@@ -354,8 +369,8 @@ def delete_slide(request, slide_id):
 
 
 def Home_sub_banner(request):
-    if 'email' not in request.session:
-        return redirect('admin_panel:admin_login')
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = HomeSubBannerForm(request.POST, request.FILES)
         if form.is_valid():
@@ -374,6 +389,8 @@ def Home_sub_banner(request):
 # --------------------------------- function for deleting sub banners ---------------------------------------
 
 def delete_sub_banner(request, id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     try:
         banner = HomeSubBanner.objects.get(id=id)
         banner.delete()
@@ -390,6 +407,8 @@ def delete_sub_banner(request, id):
 # ----------------- fucntion to add ram ------------------- 
 
 def ram_list(request):
+    if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = RamForm(request.POST)
         if form.is_valid():
@@ -407,8 +426,8 @@ def ram_list(request):
 # ----------------- function for editing existing ram -----------------
 
 def ram_edit(request, uid):
-     if 'email' not  in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
      ram = get_object_or_404(RamVarient, uid = uid)
     
      if request.method == 'POST':
@@ -427,6 +446,8 @@ def ram_edit(request, uid):
 # -----------------function to add color -------------------
 
 def color_list(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = ColorForm(request.POST)
         if form.is_valid():
@@ -443,8 +464,8 @@ def color_list(request):
 # ----------------- function for editing color--------------------
 
 def color_edit(request, uid):
-     if 'email' not  in request.session:
-        return redirect ('admin_panel:admin_login')
+     if not request.user.is_superuser:
+         return redirect ('admin_panel:admin_login')
      color = get_object_or_404(ColorVarient, uid = uid)
     
      if request.method == 'POST':
@@ -464,6 +485,8 @@ def color_edit(request, uid):
 # ====================================== ORDERS ================================================================================================================
 
 def order_listing(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     orders = Order.objects.filter(is_ordered = True).order_by('-created_at')
     print(orders)
     context = {
@@ -471,7 +494,11 @@ def order_listing(request):
     }
     return render(request, 'admin_templates/orders/order_listing.html', context)
 
+
+
 def order_details(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     order = Order.objects.get(order_number=id)
     total = order.order_total
     tax = order.tax
@@ -486,7 +513,10 @@ def order_details(request,id):
     return render(request, "admin_templates/orders/order_details.html", context )
 
 
+
 def admin_order_cancel(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     order = Order.objects.get(order_number=id)
     order.status = "Cancelled by Admin"
     order.save()
@@ -519,13 +549,21 @@ def admin_order_cancel(request,id):
     return redirect('admin_panel:order_listing')
 
 
+
+
 def admin_order_accept(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     order = Order.objects.get(order_number=id)
     order.status = "Accepted"
     order.save()
     return redirect('admin_panel:order_listing')
 
+
+
 def admin_order_complete(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     order = Order.objects.get(order_number=id)
     order.status = "Completed"
     order.save()
@@ -536,7 +574,8 @@ def admin_order_complete(request,id):
 # function for accepting the user request for returning the product 
 
 def admin_order_returned(request,id):
-    
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     # changing the order status 
     order = Order.objects.get(order_number=id)
     order.status = "Returned"
@@ -574,6 +613,8 @@ def admin_order_returned(request,id):
 
 # ---------------------- coupon page --------------------
 def coupons_listing(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     if request.method == 'POST':
         form = CouponForm(request.POST)
         if form.is_valid():
@@ -586,6 +627,8 @@ def coupons_listing(request):
 
 
 def coupons_edit(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     coupon = get_object_or_404(Coupon,id=id)
     if request.method == "POST":
         form = CouponForm(request.POST, instance=coupon)
@@ -607,6 +650,8 @@ def coupons_edit(request,id):
 
 # product offer listing
 def product_offers(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     list = ProductOffer.objects.all()
     return render(request, "admin_templates/offers/product_offers.html",{"list":list})
 
@@ -614,6 +659,8 @@ def product_offers(request):
 
 # add new product offer 
 def add_product_offers(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     if request.method == "POST":
         form = CreateProductOfferForm(request.POST, request.FILES)
         if form.is_valid():
@@ -631,6 +678,8 @@ def add_product_offers(request):
 
 # edit product offer 
 def edit_product_offer(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     offer = get_object_or_404(ProductOffer, id=id)
     if request.method == "POST":
         form = CreateProductOfferForm(request.POST, request.FILES , instance=offer)
@@ -646,7 +695,12 @@ def edit_product_offer(request,id):
     return render(request, "admin_templates/offers/edit_product_offers.html",{"form":form})
 
 
+
+
+# function delete product offer 
 def delete_product_offer(request,id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     offer = get_object_or_404(ProductOffer,id=id)
     offer.delete()
     return redirect("admin_panel:product_offers")
@@ -658,11 +712,20 @@ def delete_product_offer(request,id):
 
 # ----------------------- FUNCTIONS FOR CATEGORY OFFERS -------------------------------
 
+
+
 def category_offers(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     list = CategoryOffer.objects.all()
     return render (request, "admin_templates/offers/category_offers.html",{"list":list})
 
+
+
+
 def add_category_offers(request):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     if request.method == "POST":
         form = CreateCategoryOfferForm(request.POST, request.FILES)
         if form.is_valid():
@@ -676,6 +739,8 @@ def add_category_offers(request):
 
 
 def edit_category_offer(request, id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     offer = get_object_or_404(CategoryOffer, id=id)
     if request.method == "POST":
         form = CreateCategoryOfferForm(request.POST, request.FILES, instance=offer)
@@ -691,6 +756,8 @@ def edit_category_offer(request, id):
 
 
 def delete_category_offer(request, id):
+    if not request.user.is_superuser:
+        return redirect ('admin_panel:admin_login')
     offer = CategoryOffer.objects.get(id=id)
     offer.delete()
     return redirect('admin_panel:category_offers')
