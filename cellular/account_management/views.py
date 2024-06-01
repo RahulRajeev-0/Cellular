@@ -51,8 +51,9 @@ def user_login(request):
         uemail=request.POST.get('email')
         try:
             account=Account.objects.get(email=uemail)
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            account = None
         upass=request.POST.get('password')
         user=authenticate(request,email=uemail,password=upass)
         if user is not None:
