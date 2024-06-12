@@ -101,7 +101,7 @@ def user_signUp(request):
         pass1=request.POST.get('passw1')
         pass2=request.POST.get('passw2')
         refferal_code = request.POST.get('refferal_code')
-        print("++++++++++++++++++++++++")
+       
         print(refferal_code)
         user=Account.objects.all()
         print(user)
@@ -110,8 +110,8 @@ def user_signUp(request):
             #code for checking the username 
 
             try:
-                if len(uname)<=2:
-                    messages.warning(request,'Username must contains atleast 3 letter')
+                if len(uname)<=3:
+                    messages.warning(request,'Username must contains atleast 4 letter')
                     return redirect('account_management:user_signUp')
             except:
                 pass
@@ -119,6 +119,9 @@ def user_signUp(request):
             try:
                 if " " in uname:
                     messages.warning(request,"User can't include blank space")
+                    return redirect('account_management:user_signUp')
+                if not uname.isalnum() and "_" not in uname:
+                    messages.warning(request, "Username can only contain alphanumeric characters and underscores.")
                     return redirect('account_management:user_signUp')
             except:
                 pass
@@ -373,7 +376,7 @@ def user_profile(request):
 
 def update_username(request):
     if request.method == 'POST':
-        print("++++++++++++++++++++++++++++++++++++")
+        
         new_uname = request.POST.get('new_uname')
 
         try:
